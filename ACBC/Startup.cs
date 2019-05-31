@@ -27,6 +27,13 @@ namespace ACBC
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddCors(options =>
+                             options.AddPolicy("AllowSameDomain", builder =>
+                                                builder.AllowAnyOrigin()
+                                                .AllowAnyHeader()
+                                                .AllowAnyMethod()
+                                                .WithExposedHeaders(new string[] { "code", "msg" })
+                                                .AllowCredentials()));
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
@@ -39,7 +46,7 @@ namespace ACBC
             }
 
             app.UseMvc();
-
+            app.UseCors("AllowSameDomain");
             Global.StartUp();
         }
     }

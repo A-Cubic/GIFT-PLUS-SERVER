@@ -30,7 +30,7 @@ namespace ACBC.Common
         {
             get
             {
-                return Environment.GetEnvironmentVariable("Redis");
+                return Environment.GetEnvironmentVariable("redis");
             }
         }
 
@@ -38,7 +38,7 @@ namespace ACBC.Common
         {
             get
             {
-                return Environment.GetEnvironmentVariable("DBUrl");
+                return Environment.GetEnvironmentVariable("MysqlDBUrl");
             }
         }
 
@@ -46,7 +46,7 @@ namespace ACBC.Common
         {
             get
             {
-                return Environment.GetEnvironmentVariable("DBUser");
+                return Environment.GetEnvironmentVariable("MysqlDBUser");
             }
         }
 
@@ -54,7 +54,7 @@ namespace ACBC.Common
         {
             get
             {
-                return Environment.GetEnvironmentVariable("DBPort");
+                return Environment.GetEnvironmentVariable("MysqlDBPort");
             }
         }
 
@@ -62,7 +62,7 @@ namespace ACBC.Common
         {
             get
             {
-                return Environment.GetEnvironmentVariable("DBPassword");
+                return Environment.GetEnvironmentVariable("MysqlDBPassword");
             }
         }
     }

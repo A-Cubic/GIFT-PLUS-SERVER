@@ -21,7 +21,7 @@ namespace ACBC.Common
         public CodeMessage code;
         public string msg;
     }
-
+    
     /// <summary>
     /// 返回结果外部封装对象
     /// </summary>

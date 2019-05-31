@@ -3,6 +3,7 @@ using ACBC.Dao;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -92,7 +93,18 @@ namespace ACBC.Buss
             Message msg = null;
             if (baseApi.token != null)
             {
-                
+                using (var client = ConnectionMultiplexer.Connect(Global.Redis))
+                {
+                    var db = client.GetDatabase(0);
+                    if (db.StringGet(baseApi.token).ToString() == null)
+                    {
+                        msg = new Message(CodeMessage.InvalidToken, "InvalidToken");
+                    }
+                }
+            }
+            else if (!needLogin)
+            {
+
             }
             else
             {
@@ -174,6 +186,99 @@ namespace ACBC.Buss
             }
 
         }
+
+        #region B2B业务处理方法
+        /// <summary>
+        /// 业务处理方法
+        /// </summary>
+        /// <param name="controller">控制器</param>
+        /// <param name="baseApi">传入参数</param>
+        /// <returns></returns>
+        public object BussResults(Controller controller, ApiType apiType, object param)
+        {
+            var route = "";
+            var action = "";
+            var routeController = controller.RouteData.Values["controller"].ToString();
+            var routeAction = controller.RouteData.Values["action"].ToString();
+            action = routeAction.Replace("/","");
+            var token = "";
+            var userId = "";
+            var shopId = "";
+            object date=null;
+            if (controller.Request.Headers.ContainsKey("userId") && controller.Request.Headers.ContainsKey("token") && controller.Request.Headers.ContainsKey("shopId"))
+            {
+                userId = controller.Request.Headers["userId"].ToString();
+                token = controller.Request.Headers["token"].ToString();
+                shopId= controller.Request.Headers["shopId"].ToString();
+            }
+            var msg = CheckToken(apiType, token, route , userId);
+            if (msg!=null)
+            {
+                controller.Response.Headers.Add("code",msg.code.ToString());
+                controller.Response.Headers.Add("msg",msg.msg );
+            }
+            var obj = bussList[apiType];
+            MethodInfo method = obj.GetType().GetMethod("Do_"+ action);
+            if (method == null)
+            {
+                controller.Response.Headers.Add("code", ((int)CodeMessage.InvalidMethod).ToString());
+                controller.Response.Headers.Add("msg", "InvalidMethod");
+                return "";
+            }
+            else
+            {
+                try
+                {
+                    date = method.Invoke(obj,new object[] { param, userId,shopId });
+                }
+                catch (Exception e)
+                {
+                    controller.Response.Headers.Add("msg",e.StackTrace);
+                }
+                
+            }
+            return date;
+        }
+
+        /// <summary>
+        /// 验证令牌
+        /// </summary>
+        /// <param name="baseApi">传入参数</param>
+        /// <param name="route">API路径</param>
+        /// <returns>验证结果，null为通过</returns>
+        private Message CheckToken(ApiType apiType, string token, string route, string userId)
+        {
+            Message msg = null;
+            if (apiType == ApiType.UserApi)
+            {
+
+            }
+            else
+            {
+                if (userId!="" && userId!=null && userId != "undefined")
+                {
+                    using (var client = ConnectionMultiplexer.Connect(Global.Redis))
+                    {
+                        try
+                        {
+                            var db = client.GetDatabase(0);
+                            var redisToken = db.StringGet(userId).ToString();
+                            redisToken.Substring(1, redisToken.ToString().Length-2);
+                            if (redisToken!=token)
+                            {                                
+                                msg = new Message(CodeMessage.InvalidToken, "InvalidToken");
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            throw e;
+                        }
+                    }
+                }
+            }
+            return msg;
+        }
+        #endregion
 
         /// <summary>
         /// Header传递关键参数处理方法

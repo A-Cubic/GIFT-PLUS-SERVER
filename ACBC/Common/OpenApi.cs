@@ -12,6 +12,12 @@ namespace ACBC.Common
     public enum ApiType
     {
         OpenApi,
+        UserApi,
+        GoodsApi,
+        OrderApi,
+        EmployeeApi,
+        MemberApi,
+        ActiveApi,
     }
 
     public enum CheckType
@@ -72,5 +78,135 @@ namespace ACBC.Common
             return ApiType.OpenApi;
         }
 
+    }
+
+    /// <summary>
+    /// 完全开放
+    /// </summary>
+    public class UserApi : BaseApi
+    {
+        public override CheckType GetCheckType()
+        {
+            return CheckType.Open;
+        }
+
+        public override InputType GetInputType()
+        {
+            return InputType.Body;
+        }
+
+        public override ApiType GetApiType()
+        {
+            return ApiType.UserApi;
+        }
+
+    }
+
+    /// <summary>
+    /// 验证token
+    /// </summary>
+    public class GoodsApi : BaseApi
+    {
+        public override CheckType GetCheckType()
+        {
+            return CheckType.Token;
+        }
+
+        public override InputType GetInputType()
+        {
+            return InputType.Body;
+        }
+
+        public override ApiType GetApiType()
+        {
+            return ApiType.GoodsApi;
+        }
+
+    }
+
+    /// <summary>
+    /// 验证token
+    /// </summary>
+    public class OrderApi : BaseApi
+    {
+        public override CheckType GetCheckType()
+        {
+            return CheckType.Token;
+        }
+
+        public override InputType GetInputType()
+        {
+            return InputType.Body;
+        }
+
+        public override ApiType GetApiType()
+        {
+            return ApiType.OrderApi;
+        }
+
+    }
+
+    /// <summary>
+    /// 验证token
+    /// </summary>
+    public class EmployeeApi : BaseApi
+    {
+        public override CheckType GetCheckType()
+        {
+            return CheckType.Token;
+        }
+
+        public override InputType GetInputType()
+        {
+            return InputType.Body;
+        }
+
+        public override ApiType GetApiType()
+        {
+            return ApiType.EmployeeApi;
+        }
+    }
+
+    /// <summary>
+    /// 验证token
+    /// </summary>
+    public class MemberApi : BaseApi
+    {
+        public override CheckType GetCheckType()
+        {
+            return CheckType.Token;
+        }
+
+        public override InputType GetInputType()
+        {
+            return InputType.Body;
+        }
+
+        public override ApiType GetApiType()
+        {
+            return ApiType.MemberApi;
+        }
+    }
+    
+
+    /// <summary>
+    /// 验证token
+    /// </summary>
+    public class ActiveApi : BaseApi
+    {
+        public override CheckType GetCheckType()
+        {
+            return CheckType.Token;
+        }
+
+        public override InputType GetInputType()
+        {
+            return InputType.Body;
+        }
+
+        public override ApiType GetApiType()
+        {
+            return ApiType.ActiveApi;
+        }
     }
 }
