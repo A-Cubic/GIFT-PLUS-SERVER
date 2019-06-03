@@ -97,27 +97,5 @@ namespace ACBC.Buss
             return pageResult;
         }
     }
-
-    public class StockStatisticsParam
-    {
-        public string status;//状态
-        public int current = 1;//页数
-        public int pageSize=10;//一页几个
-    }
-
-    public class StockStatisticsItem
-    {
-        public string movinGoods;//未到商品
-        public string arriveGoods;//已到商品
-        public string allGoods;//所有商品              
-    }
-
-    public class StockStatisticsList
-    {
-        public int key;//序号 
-        public string goodsName;//商品名
-        public string goodsImg;//商品图片
-        public string goodsnum;//商品数
-        public string proportion;//商品占比
-    }
+    
 }

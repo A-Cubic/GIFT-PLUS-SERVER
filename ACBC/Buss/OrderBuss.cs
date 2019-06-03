@@ -56,15 +56,9 @@ namespace ACBC.Buss
                 orderListParam.pageSize = 10;
             }
             pageResult.pagination = new Page(orderListParam.current, orderListParam.pageSize);
-            var userId = "";
-            var shopId = "";
-            using (var client = ConnectionMultiplexer.Connect(Global.Redis))
-            {
-                var db = client.GetDatabase(0);
-                string[] redisValue = db.StringGet(baseApi.token).ToString().Split(",");
-                userId = redisValue[0];
-                shopId = redisValue[1];
-            }
+            var userId = Util.GetUserUserId(baseApi.token);
+            var shopId = Util.GetUserShopId(baseApi.token);
+            
             OrderDao orderDao = new OrderDao();
             DataTable dt= orderDao.OrderList(shopId, order, date,  state);
             if (dt.Rows.Count>0)
@@ -87,28 +81,5 @@ namespace ACBC.Buss
             return pageResult;
         }
     }
-
-    public class OrderListParam
-    {
-        public string orderCode;//订单code
-        public string[] date;//时间段  
-        public string state;//状态
-        public int current;
-        public int pageSize;
-    }
-
-    public class OrderListItem
-    {
-        public int key;//序号
-        public string state;//状态
-        public string orderCode;//订单码
-        public string num;//数量
-        public string price;//价格
-        public string payTime;//支付时间
-    }
-
-    public class OrderListItemList
-    {
-        public double totalPrice;//总钱数               
-    }
+   
 }

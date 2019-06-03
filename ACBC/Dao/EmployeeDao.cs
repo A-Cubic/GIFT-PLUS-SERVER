@@ -14,8 +14,7 @@ namespace ACBC.Dao
         public DataTable EmployeeLogon(string shopId, EmployeeLogonParam employeeLogonParam)
         {
             StringBuilder selectBuilder = new StringBuilder();
-            selectBuilder.AppendFormat("select store_user_name,store_user_img,store_user_sex,store_user_phone " +
-                " from t_base_store_user where store_id='{0}' ", shopId);
+            selectBuilder.AppendFormat(EmployeeSql.SELECT_T_BASE_STORE_USER_BY_STORE_ID, shopId);
             string select = selectBuilder.ToString();
             DataTable dt = DatabaseOperationWeb.ExecuteSelectDS(select,"T").Tables[0];
             return dt;
@@ -24,8 +23,7 @@ namespace ACBC.Dao
         public DataTable CheckStoreCode(AddEmployeeParam addEmployeeParam)
         {
             StringBuilder selectBuilder = new StringBuilder();
-            selectBuilder.AppendFormat("select store_id " +
-                " from t_buss_store_code where store_code='{0}' ", addEmployeeParam.storeCode);
+            selectBuilder.AppendFormat(EmployeeSql.SELECT_T_BUSS_STORE_CODE_BY_STORE_CODE, addEmployeeParam.storeCode);
             string select = selectBuilder.ToString();
             DataTable dt = DatabaseOperationWeb.ExecuteSelectDS(select, "T").Tables[0];
             return dt;
@@ -34,8 +32,7 @@ namespace ACBC.Dao
         public bool AddT_buss_store_code(AddEmployeeParam addEmployeeParam, string shopId)
         {
             StringBuilder selectBuilder = new StringBuilder();
-            selectBuilder.AppendFormat("insert into t_buss_store_code(store_id, store_code,state)  " +
-                " values('{0}','{1}','{2}')  ", addEmployeeParam.storeCode, addEmployeeParam.state, shopId);
+            selectBuilder.AppendFormat(EmployeeSql.INSERT_T_BUSS_STORE_CODE, addEmployeeParam.storeCode, addEmployeeParam.state, shopId);
             string select = selectBuilder.ToString();
             if (DatabaseOperationWeb.ExecuteDML(select))
             {
@@ -50,8 +47,7 @@ namespace ACBC.Dao
         public DataTable CheckStoreId(string shopId)
         {
             StringBuilder selectBuilder = new StringBuilder();
-            selectBuilder.AppendFormat("select store_id " +
-                " from t_buss_store_code where store_id='{0}' ", shopId);
+            selectBuilder.AppendFormat(EmployeeSql.SELECT_T_BUSS_STORE_CODE, shopId);
             string select = selectBuilder.ToString();
             DataTable dt = DatabaseOperationWeb.ExecuteSelectDS(select, "T").Tables[0];
             return dt;
@@ -60,8 +56,7 @@ namespace ACBC.Dao
         public bool UpdateT_buss_store_code(AddEmployeeParam addEmployeeParam, string shopId)
         {
             StringBuilder selectBuilder = new StringBuilder();
-            selectBuilder.AppendFormat("update t_buss_store_code set store_code='{0}',state='{1}'  " +
-                " where store_id='{2}' ", addEmployeeParam.storeCode, addEmployeeParam.state, shopId);
+            selectBuilder.AppendFormat(EmployeeSql.UPDATE_T_BUSS_STORE_CODE, addEmployeeParam.storeCode, addEmployeeParam.state, shopId);
             string select = selectBuilder.ToString();
             if (DatabaseOperationWeb.ExecuteDML(select))
             {
@@ -76,11 +71,43 @@ namespace ACBC.Dao
         public DataTable CheckOldStoreId(string shopId)
         {
             StringBuilder selectBuilder = new StringBuilder();
-            selectBuilder.AppendFormat("select store_code,state " +
-                " from t_buss_store_code where store_id='{0}' ", shopId);
+            selectBuilder.AppendFormat(EmployeeSql.SELECT_T_BUSS_STORE_CODE_BY_STORE_ID, shopId);
             string select = selectBuilder.ToString();
             DataTable dt = DatabaseOperationWeb.ExecuteSelectDS(select, "T").Tables[0];
             return dt;
         }
+    }
+
+    public class EmployeeSql
+    {
+        public const string SELECT_T_BUSS_STORE_CODE_BY_STORE_ID = ""
+            + " SELECT STORE_CODE,STATE   "
+            + " FROM T_BUSS_STORE_CODE "
+            + " WHERE STORE_ID='{0}'";
+
+        public const string UPDATE_T_BUSS_STORE_CODE = ""
+            + " UPDATE T_BUSS_STORE_CODE "
+            + " SET STORE_CODE='{0}',"
+            + " STATE='{1}' "
+            + " WHERE STORE_ID='{2}'";
+
+        public const string SELECT_T_BUSS_STORE_CODE = ""
+            + " SELECT STORE_ID  "
+            + " FROM T_BUSS_STORE_CODE "
+            + " WHERE STORE_ID='{0}'";
+
+        public const string INSERT_T_BUSS_STORE_CODE = ""
+            + " INSERT INTO T_BUSS_STORE_CODE(STORE_ID, STORE_CODE,STATE)  "
+            + " VALUES('{0}','{1}','{2}')";
+
+        public const string SELECT_T_BUSS_STORE_CODE_BY_STORE_CODE = ""
+            + " SELECT STORE_ID  "
+            + " FROM T_BUSS_STORE_CODE "
+            + " WHERE STORE_CODE='{0}'";
+
+        public const string SELECT_T_BASE_STORE_USER_BY_STORE_ID = ""
+            + " SELECT STORE_USER_NAME,STORE_USER_IMG,STORE_USER_SEX,STORE_USER_PHONE  "
+            + " FROM T_BASE_STORE_USER "
+            + " WHERE STORE_ID='{0}'";
     }
 }

@@ -10,7 +10,7 @@ namespace ACBC.Common
 {
     public class Global
     {
-        public const string ROUTE_PX = "/api/config";
+        public const string ROUTE_PX = "/api/giftmanage";
         public const int REDIS_DB = 11;
         public static BaseBuss BUSS = new BaseBuss();
         public static Dictionary<string, Dictionary<string, ConfigGroup>> ConfigList;
@@ -21,9 +21,6 @@ namespace ACBC.Common
             {
                 DatabaseOperationWeb.TYPE = new DBManager();
             }
-
-            //new ConfigBuss().GetConfigAll();
-
         }
 
         public static string Redis

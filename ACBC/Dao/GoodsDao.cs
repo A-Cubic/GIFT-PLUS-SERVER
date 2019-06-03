@@ -19,7 +19,7 @@ namespace ACBC.Dao
         public DataTable StockStatistics(string shopId)
         {            
             StringBuilder selectBuilder = new StringBuilder();
-            selectBuilder.AppendFormat("select count(barcode) barcode,sum(num) num,state from v_order_info where store_id='{0}' GROUP BY state", shopId);
+            selectBuilder.AppendFormat(GoodsDaoSqls.SELECT_V_ORDER_INFO_BY_STORE_ID, shopId);
             string select = selectBuilder.ToString();
             DataTable dt = DatabaseOperationWeb.ExecuteSelectDS(select,"T").Tables[0];
 
@@ -34,14 +34,28 @@ namespace ACBC.Dao
         public DataTable StockStatisticsList(string shopId, StockStatisticsParam stockStatisticsParam)
         {
             StringBuilder selectBuilder = new StringBuilder();
-            selectBuilder.AppendFormat("select v.goods_name,sum(v.num) num,g.goods_img " +
-                                        "from v_order_info v,t_buss_goods g " +
-                                        "WHERE v.barcode=g.barcode and store_id='{0}' {1}  GROUP BY v.barcode " +
-                                        " order by num desc ", shopId, stockStatisticsParam.status);
+            selectBuilder.AppendFormat(GoodsDaoSqls.SELECT_V_ORDER_INFO_AND_T_BUSS_GOODS, shopId, stockStatisticsParam.status);
             string select = selectBuilder.ToString();
             DataTable dt = DatabaseOperationWeb.ExecuteSelectDS(select, "T").Tables[0];
 
             return dt;
         }
+    }
+
+    public class GoodsDaoSqls
+    {
+        public const string SELECT_V_ORDER_INFO_AND_T_BUSS_GOODS = ""
+            + " SELECT V.GOODS_NAME,SUM(V.NUM) NUM,G.GOODS_IMG  "
+            + " FROM V_ORDER_INFO V,T_BUSS_GOODS G "
+            + " WHERE V.BARCODE=G.BARCODE "
+            + " AND STORE_ID='{0}' {1} "
+            + " GROUP BY V.BARCODE "
+            + " ORDER BY NUM DESC";
+
+        public const string SELECT_V_ORDER_INFO_BY_STORE_ID = ""
+            + " SELECT COUNT(BARCODE) BARCODE,SUM(NUM) NUM,STATE "
+            + " FROM V_ORDER_INFO "
+            + " WHERE STORE_ID='{0}' "
+            + " GROUP BY STATE";
     }
 }

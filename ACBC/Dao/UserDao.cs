@@ -20,7 +20,7 @@ namespace ACBC.Dao
         {
             UserLoginItem userLoginItem = new UserLoginItem();
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendFormat("select userCode,store_id,userType  from t_web_user where userCode='{0}' and password='{1}'", userName, password );
+            stringBuilder.AppendFormat(UserDaoSqls.SELECT_T_WEB_USER_BY_USERCODE_AND_PASSWORD, userName, password );
             string select = stringBuilder.ToString();
             DataTable dt = DatabaseOperationWeb.ExecuteSelectDS(select,"T").Tables[0];
             if (dt.Rows.Count==1 && dt.Rows[0][0]!=DBNull.Value)
@@ -36,5 +36,14 @@ namespace ACBC.Dao
                 return userLoginItem;
             }
         }
+    }
+
+    public class UserDaoSqls
+    {
+        public const string SELECT_T_WEB_USER_BY_USERCODE_AND_PASSWORD = ""
+            + " SELECT USERCODE,STORE_ID,USERTYPE "
+            + " FROM T_WEB_USER "
+            + " WHERE USERCODE='{0}' "
+            + " AND PASSWORD='{1}'";
     }
 }

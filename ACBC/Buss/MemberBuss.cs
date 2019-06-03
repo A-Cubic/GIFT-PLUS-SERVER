@@ -51,9 +51,8 @@ namespace ACBC.Buss
             {
                 memberListParam.sex = "";
             }
-            pageResult.pagination = new Page(memberListParam.current, memberListParam.pageSize);
-            List<UserMessage> list = Util.GetUserMessage(baseApi.token);
-            string shopId = list[0].shopId;
+            pageResult.pagination = new Page(memberListParam.current, memberListParam.pageSize);          
+            string shopId = Util.GetUserShopId(baseApi.token);
             MemberDao memberDao = new MemberDao();
             DataTable dt= memberDao.MemberList(shopId, memberListParam);
             if (dt.Rows.Count>0)
@@ -72,24 +71,6 @@ namespace ACBC.Buss
             pageResult.pagination.total = dt.Rows.Count;
             return pageResult;
         }
-
         
-    }
-
-    public class MemberListItem
-    {
-        public int key;
-        public string name;
-        public string phone;
-        public string img;
-        public string sex;
-    }
-
-    public class MemberListParam
-    {
-        public string userName;
-        public string sex;
-        public int current;
-        public int pageSize;
-    }
+    }  
 }

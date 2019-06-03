@@ -43,8 +43,7 @@ namespace ACBC.Buss
             PageResult pageResult = new PageResult();
             pageResult.list = new List<object>();
             pageResult.pagination = new Page(activeListParam.current, activeListParam.pageSize);
-            List<UserMessage> list = Util.GetUserMessage(baseApi.token);
-            string shopId = list[0].shopId;
+            string shopId = Util.GetUserShopId(baseApi.token);
             ActiveDao activeDao = new ActiveDao();
             DataTable dt = activeDao.ActiveList(shopId, activeListParam);
             pageResult.pagination.total = 0;
@@ -62,11 +61,11 @@ namespace ACBC.Buss
                     DataTable dtselect = new DataTable();
                     if (dt1.Rows[i]["active_type"].ToString() == "0")
                     {
-                        dtselect = activeDao.Select_T_Buss_Active_Consume(dt1.Rows[i]["active_id"].ToString());
+                        dtselect = activeDao.SelectActiveConsume(dt1.Rows[i]["active_id"].ToString());
                     }
                     else
                     {
-                        dtselect = activeDao.Select_T_Buss_Active_Check(dt1.Rows[i]["active_id"].ToString());
+                        dtselect = activeDao.SelectActiveCheck(dt1.Rows[i]["active_id"].ToString());
                     }
                     if (dtselect.Rows.Count > 0)
                     {
@@ -133,12 +132,11 @@ namespace ACBC.Buss
                 msg.msg = "活动奖品不能为空";
                 return msg;
             }                                     
-            List<UserMessage> list = Util.GetUserMessage(baseApi.token);
-            string shopId = list[0].shopId;
+            string shopId = Util.GetUserShopId(baseApi.token);
             ActiveDao activeDao = new ActiveDao();
-            if (activeDao.Insert_T_Buss_Active(addActiveParam, shopId))
+            if (activeDao.InsertAddActive(addActiveParam, shopId))
             {
-                DataTable dt = activeDao.Select_T_Buss_Active_ID(addActiveParam, shopId);
+                DataTable dt = activeDao.SelectAddActive(addActiveParam, shopId);
                 string id = dt.Rows[0][0].ToString();
                 if (addActiveParam.activeType == "0")
                 {
@@ -147,14 +145,14 @@ namespace ACBC.Buss
                         addActiveParam.itemNums = "1";
                         addActiveParam.ItemValue = addActiveParam.heartItemValue;
                         addActiveParam.valueType = "1";
-                        msg.type = activeDao.Insert_T_Buss_Active_Consume(addActiveParam, id) == true ? 1 : 0;
+                        msg.type = activeDao.InsertActiveConsume(addActiveParam, id) == true ? 1 : 0;
                     }
                     if (addActiveParam.limitItemValue!=null && addActiveParam.limitItemValue !="")
                     {
                         addActiveParam.itemNums = "1";
                         addActiveParam.ItemValue = addActiveParam.limitItemValue;
                         addActiveParam.valueType = "2";
-                        msg.type = activeDao.Insert_T_Buss_Active_Consume(addActiveParam, id) == true ? 1 : 0;
+                        msg.type = activeDao.InsertActiveConsume(addActiveParam, id) == true ? 1 : 0;
                     }
                     if (addActiveParam.list != null && addActiveParam.list.Count >0)
                     {                        
@@ -163,7 +161,7 @@ namespace ACBC.Buss
                         {
                             addActiveParam.itemNums = addActiveParam.list[i].goodsNums;
                             addActiveParam.ItemValue = addActiveParam.list[i].goodsId;
-                            msg.type = activeDao.Insert_T_Buss_Active_Consume(addActiveParam, id) == true ? 1 : 0;
+                            msg.type = activeDao.InsertActiveConsume(addActiveParam, id) == true ? 1 : 0;
                         }                      
                     }
                 }
@@ -174,14 +172,14 @@ namespace ACBC.Buss
                         addActiveParam.itemNums = "1";
                         addActiveParam.ItemValue = addActiveParam.heartItemValue;
                         addActiveParam.valueType = "1";
-                        msg.type = activeDao.Insert_T_Buss_Active_Check(addActiveParam, id) == true ? 1 : 0;
+                        msg.type = activeDao.InsertActiveCheck(addActiveParam, id) == true ? 1 : 0;
                     }
                     if (addActiveParam.limitItemValue != null && addActiveParam.limitItemValue != "")
                     {
                         addActiveParam.itemNums = "1";
                         addActiveParam.ItemValue = addActiveParam.limitItemValue;
                         addActiveParam.valueType = "2";
-                        msg.type = activeDao.Insert_T_Buss_Active_Check(addActiveParam, id) == true ? 1 : 0;
+                        msg.type = activeDao.InsertActiveCheck(addActiveParam, id) == true ? 1 : 0;
                     }
                     if (addActiveParam.list != null && addActiveParam.list.Count > 0)
                     {
@@ -190,10 +188,10 @@ namespace ACBC.Buss
                         {
                             addActiveParam.itemNums = addActiveParam.list[i].goodsNums;
                             addActiveParam.ItemValue = addActiveParam.list[i].goodsId;
-                            msg.type = activeDao.Insert_T_Buss_Active_Check(addActiveParam, id) == true ? 1 : 0;
+                            msg.type = activeDao.InsertActiveCheck(addActiveParam, id) == true ? 1 : 0;
                         }
                     }
-                    msg.type = activeDao.Insert_T_Buss_Active_Check(addActiveParam, id) == true ? 1 : 0;
+                    msg.type = activeDao.InsertActiveCheck(addActiveParam, id) == true ? 1 : 0;
                 }
             }
             else
@@ -223,12 +221,11 @@ namespace ACBC.Buss
                 return msg;
             }
             
-            List<UserMessage> list = Util.GetUserMessage(baseApi.token);
-            string shopId = list[0].shopId;
+            string shopId = Util.GetUserShopId(baseApi.token);
             ActiveDao activeDao = new ActiveDao();
             if (choseGoodsParam.type == "1")
             {
-                if (activeDao.Insert_T_Active_Goods(shopId, choseGoodsParam))
+                if (activeDao.InsertActiveGoods(shopId, choseGoodsParam))
                 {
                     msg.type = 1;
                 }
@@ -239,7 +236,7 @@ namespace ACBC.Buss
             }
             else
             {
-                if (activeDao.Delete_T_Active_Goods(shopId, choseGoodsParam))
+                if (activeDao.DeleteActiveGoods(shopId, choseGoodsParam))
                 {
                     msg.type = 1;
                 }
@@ -278,14 +275,13 @@ namespace ACBC.Buss
                 goodsListParam.goodsName = "";
             }
             pageResult.pagination = new Page(goodsListParam.current, goodsListParam.pageSize);
-            List<UserMessage> list = Util.GetUserMessage(baseApi.token);
-            string shopId = list[0].shopId;
+            string shopId = Util.GetUserShopId(baseApi.token);
             ActiveDao activeDao = new ActiveDao();
-            activeDao.Delete_T_Active_Goods(shopId);
-            DataTable dt = activeDao.Select_T_Buss_Goods(goodsListParam);
+            activeDao.DeleteActiveGoods(shopId);
+            DataTable dt = activeDao.SelectGoods(goodsListParam);
             if (dt.Rows.Count>0)
             {
-                DataTable dtchose = activeDao.Select_T_Active_Goods(shopId);
+                DataTable dtchose = activeDao.SelectActiveGoods(shopId);
                 int count = dtchose.Rows.Count;
                 for (int i= (goodsListParam.current-1)* goodsListParam.pageSize; i< dt.Rows.Count && i< goodsListParam.current* goodsListParam.pageSize;i++)
                 {
@@ -327,10 +323,9 @@ namespace ACBC.Buss
             PageResult pageResult = new PageResult();
             pageResult.list = new List<object>();
             pageResult.pagination = new Page(goodsListParam.current, goodsListParam.pageSize);
-            List<UserMessage> list = Util.GetUserMessage(baseApi.token);
-            string shopId = list[0].shopId;
+            string shopId = Util.GetUserShopId(baseApi.token);
             ActiveDao activeDao = new ActiveDao();
-            DataTable dt= activeDao.Select_T_Active_Goods(shopId);
+            DataTable dt= activeDao.SelectActiveGoods(shopId);
             string barcodes = "";
             if (dt.Rows.Count > 0)
             {
@@ -349,7 +344,7 @@ namespace ACBC.Buss
                         barcodes += " '" + dt.Rows[i]["goodsId"].ToString() + "',";
                     }
                 }
-                DataTable dtGoods = activeDao.Select_T_Buss_Goods(barcodes);
+                DataTable dtGoods = activeDao.SelectGoods(barcodes);
                 if (dtGoods.Rows.Count > 0)
                 {
                     for (int j = (goodsListParam.current - 1) * goodsListParam.pageSize; j < dtGoods.Rows.Count && j < goodsListParam.current * goodsListParam.pageSize; j++)
@@ -366,7 +361,7 @@ namespace ACBC.Buss
                     }
                 }
                 pageResult.pagination.total = dtGoods.Rows.Count;
-                activeDao.Delete_T_Active_Goods(shopId);
+                activeDao.DeleteActiveGoods(shopId);
             }
             else
             {
@@ -395,74 +390,8 @@ namespace ACBC.Buss
             if (msg.msg != null)
                 return msg;
             ActiveDao activeDao = new ActiveDao();
-            msg.type= activeDao.Update_T_Active_Goods(addActiveList)==true?1:0;
+            msg.type= activeDao.UpdateActiveGoods(addActiveList)==true?1:0;
             return msg;
         }
-    }
-
-    
-
-    public class GoodsListParam
-    {
-        public string goodsName;
-        public int current;
-        public int pageSize;
-    }
-
-    public class GoodsListItem
-    {
-        public int key;
-        public string goodsName;
-        public string goodsId;
-        public string img;
-        public string goodsCost;//进货价
-        public string goodsPrice;//售价
-        public string goodsNum;
-        public int ifchose;//0未选中，1选中
-    }
-
-    public class ChoseGoodsParam
-    {
-        public string goodsId;// 
-        public string type;//0删除，1添加
-    }
-
-    public class AddActiveParam
-    {
-        public string activeType;//活动类型
-        public string[] activeTime;//活动时间
-        public string activeRemark;//活动标题
-        public string consume;//钱数
-        public string heartItemValue;//心值
-        public string limitItemValue;//提高上限值
-        public string ItemValue;
-        public string itemNums;
-        public string valueType;
-        public List<AddActiveList> list;     
-    }
-
-    public class AddActiveList
-    {
-        public string goodsNums;//商品数量
-        public string goodsId;//商品  
-    }
-
-    public class ActiveListParam
-    {
-        public string title;
-        public int current;
-        public int pageSize;
-    }
-
-    public class ActiveListItem
-    {
-        public int key;
-        public string title;//标题
-        public string consumeNum;//消费
-        public string drainage;//引流
-        public string newUser;//拓客
-        public string time;//时间
-        public string activeType;//活动状态
-        public List<string> img=new List<string>();
-    }
+    }     
 }

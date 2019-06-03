@@ -18,12 +18,20 @@ namespace ACBC.Dao
         public DataTable OrderList(string shopId,string order,string date,string state)
         {
             StringBuilder selectBuilder = new StringBuilder();
-            selectBuilder.AppendFormat("select state,order_code,sum(num) num ,sum(goods_price) price,pay_time " +
-                "from v_order_info " +
-                "where store_id='{0}' {1} {2} {3} group by order_code order by pay_time desc ", shopId, order, date, state);
+            selectBuilder.AppendFormat(OrderDaoSqls.SELECT_V_ORDER_INFO_BY_STORE_ID, shopId, order, date, state);
             string select = selectBuilder.ToString();
             DataTable dt = DatabaseOperationWeb.ExecuteSelectDS(select,"T").Tables[0];
             return dt;
         }
+    }
+
+    public class OrderDaoSqls
+    {
+        public const string SELECT_V_ORDER_INFO_BY_STORE_ID = ""
+            + " SELECT STATE,ORDER_CODE,SUM(NUM) NUM ,SUM(GOODS_PRICE) PRICE,PAY_TIME "
+            + " FROM V_ORDER_INFO "
+            + " WHERE STORE_ID='{0}' {1} {2} {3} "
+            + " GROUP BY ORDER_CODE "
+            + " ORDER BY PAY_TIME DESC";
     }
 }

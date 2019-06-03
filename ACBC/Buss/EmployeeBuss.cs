@@ -26,7 +26,6 @@ namespace ACBC.Buss
             PageResult pageResult = new PageResult();
             pageResult.list = new List<object>();
             MsgResult msgResult = new MsgResult();
-            List<UserMessage> list = Util.GetUserMessage(baseApi.token);
             EmployeeLogonParam employeeLogonParam = JsonConvert.DeserializeObject<EmployeeLogonParam>(baseApi.param.ToString());
             if (employeeLogonParam.current == 0)
             {
@@ -37,8 +36,8 @@ namespace ACBC.Buss
                 employeeLogonParam.pageSize = 10;
             }
             pageResult.pagination = new Page(employeeLogonParam.current, employeeLogonParam.pageSize);
-            string shopId = list[0].shopId;
-            string power = list[0].power;
+            string shopId = Util.GetUserShopId(baseApi.token);
+            string power = Util.GetUserPower(baseApi.token);
             if (power!="1")
             {               
                 msgResult.msg = "账号权限不足，无法查看";
@@ -76,10 +75,9 @@ namespace ACBC.Buss
             MsgResult msg = new MsgResult();
             EmployeeDao employeeDao = new EmployeeDao();
             AddEmployeeParam addEmployeeParam = JsonConvert.DeserializeObject<AddEmployeeParam>(baseApi.param.ToString());
-            List<UserMessage> list = Util.GetUserMessage(baseApi.token);
-            string shopId = list[0].shopId;
-            string power = list[0].power;
-            string userId = list[0].userId;
+            string shopId = Util.GetUserShopId(baseApi.token);
+            string power = Util.GetUserPower(baseApi.token);
+            string userId = Util.GetUserUserId(baseApi.token);
             if (power != "1")
             {
                 msg.msg = "账号权限不足，无法创建";               
@@ -142,8 +140,7 @@ namespace ACBC.Buss
         public AddEmployeeParam Do_CheckOldStoreCode(BaseApi baseApi)
         {
             AddEmployeeParam msg = new AddEmployeeParam();           
-            List<UserMessage> list = Util.GetUserMessage(baseApi.token);
-            string shopId = list[0].shopId;
+            string shopId = Util.GetUserShopId(baseApi.token);
             EmployeeDao employeeDao = new EmployeeDao();
             DataTable dt = employeeDao.CheckOldStoreId(shopId);
             if (dt.Rows.Count > 0  )
@@ -156,24 +153,5 @@ namespace ACBC.Buss
         }
     }
 
-    public class AddEmployeeParam
-    {
-        public string storeCode;//验证码
-        public string state;//可注册数量
-    }
-
-    public class EmployeeLogonParam
-    {
-        public int current;
-        public int pageSize;
-    }
-
-    public class EmployeeLogonItem
-    {
-        public int key;
-        public string img;//图片
-        public string userName;//用户名
-        public string sex;//性别
-        public string phone;//电话
-    }
+  
 }
