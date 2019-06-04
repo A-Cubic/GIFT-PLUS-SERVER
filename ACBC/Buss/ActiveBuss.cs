@@ -333,7 +333,7 @@ namespace ACBC.Buss
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public string Do_ChangeGoodsNum(BaseApi baseApi)
+        public AddActiveList Do_ChangeGoodsNum(BaseApi baseApi)
         {
             AddActiveList addActiveList = JsonConvert.DeserializeObject<AddActiveList>(baseApi.param.ToString());
             if (addActiveList.goodsId==null || addActiveList.goodsId == "")
@@ -349,7 +349,7 @@ namespace ACBC.Buss
             {
                 throw new ApiException(CodeMessage.DBUpdateError, "DBUpdateError");
             }
-            return ""; 
+            return addActiveList; 
         }
     }     
 }
