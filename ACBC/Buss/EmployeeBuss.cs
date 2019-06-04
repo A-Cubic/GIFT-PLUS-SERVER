@@ -24,8 +24,6 @@ namespace ACBC.Buss
         public PageResult Do_EmployeeLogon(BaseApi baseApi)
         {
             PageResult pageResult = new PageResult();
-            pageResult.list = new List<object>();
-            MsgResult msgResult = new MsgResult();
             EmployeeLogonParam employeeLogonParam = JsonConvert.DeserializeObject<EmployeeLogonParam>(baseApi.param.ToString());
             if (employeeLogonParam.current == 0)
             {
@@ -40,28 +38,10 @@ namespace ACBC.Buss
             string power = Util.GetUserPower(baseApi.token);
             if (power!="1")
             {               
-                msgResult.msg = "账号权限不足，无法查看";
-                pageResult.item = msgResult;
-                return pageResult;
+                throw new ApiException(CodeMessage.InsufficientAuthority, "InsufficientAuthority"); 
             }
             EmployeeDao employeeDao = new EmployeeDao();
-            DataTable dt = employeeDao.EmployeeLogon(shopId, employeeLogonParam);
-            if (dt.Rows.Count>0)
-            {
-                for (int i= (employeeLogonParam.current - 1)* employeeLogonParam.pageSize;i<dt.Rows.Count && i< employeeLogonParam.current * employeeLogonParam.pageSize;i++)
-                {
-                    EmployeeLogonItem employeeLogonItem = new EmployeeLogonItem();
-                    employeeLogonItem.key =  i + 1;
-                    employeeLogonItem.img= dt.Rows[i]["store_user_img"].ToString();
-                    employeeLogonItem.userName = dt.Rows[i]["store_user_name"].ToString();
-                    employeeLogonItem.phone = dt.Rows[i]["store_user_phone"].ToString();
-                    employeeLogonItem.sex = dt.Rows[i]["store_user_sex"].ToString()=="1"?"男":"女";
-                    pageResult.list.Add(employeeLogonItem);
-                }
-            }
-            pageResult.pagination.total = dt.Rows.Count;
-            msgResult.type = 1;
-            pageResult.item = msgResult;
+            pageResult  = employeeDao.EmployeeLogon(shopId, employeeLogonParam);                       
             return pageResult;
         }
 
@@ -70,9 +50,8 @@ namespace ACBC.Buss
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public MsgResult Do_AddEmployee(BaseApi baseApi)
+        public string Do_AddEmployee(BaseApi baseApi)
         {
-            MsgResult msg = new MsgResult();
             EmployeeDao employeeDao = new EmployeeDao();
             AddEmployeeParam addEmployeeParam = JsonConvert.DeserializeObject<AddEmployeeParam>(baseApi.param.ToString());
             string shopId = Util.GetUserShopId(baseApi.token);
@@ -80,13 +59,11 @@ namespace ACBC.Buss
             string userId = Util.GetUserUserId(baseApi.token);
             if (power != "1")
             {
-                msg.msg = "账号权限不足，无法创建";               
-                return msg;
+                throw new ApiException(CodeMessage.InsufficientAuthority, "InsufficientAuthority");
             }
             if (addEmployeeParam.storeCode == null || addEmployeeParam.storeCode == "" || addEmployeeParam.storeCode.Length != 4)
             {
-                msg.msg = "请输入正确的验证码";
-                return msg;
+                throw new ApiException(CodeMessage.CodeError, "CodeError");
             }
             else
             {
@@ -95,41 +72,31 @@ namespace ACBC.Buss
                 {
                     if (shopId != dt1.Rows[0][0].ToString())                             
                     {
-                        msg.msg = "验证码已存在";
-                        return msg;
+                        throw new ApiException(CodeMessage.CodeRepeat, "CodeRepeat");
                     }
                 }                                
             }           
             if (addEmployeeParam.state == null || addEmployeeParam.state == "" || !int.TryParse(addEmployeeParam.state,out int i) )
             {
-                msg.msg = "请输入正确的可注册数量";
-                return msg;
+                throw new ApiException(CodeMessage.ErrorLogonNum, "ErrorLogonNum");              
             }                                              
             
             DataTable dt = employeeDao.CheckStoreId(shopId);
             if (dt.Rows.Count == 1)
             {
-                if (employeeDao.UpdateT_buss_store_code(addEmployeeParam, shopId))
+                if (!employeeDao.UpdateT_buss_store_code(addEmployeeParam, shopId))             
                 {
-                    msg.type = 1;
-                }
-                else
-                {
-                    msg.msg = "修改失败";
+                    throw new ApiException(CodeMessage.InterfaceDBError, "InterfaceDBError");
                 }
             }
             else
             {
-                if (employeeDao.AddT_buss_store_code(addEmployeeParam, shopId))
+                if (!employeeDao.AddT_buss_store_code(addEmployeeParam, shopId))
                 {
-                    msg.type = 1;
-                }
-                else
-                {
-                    msg.msg = "创建失败";
+                    throw new ApiException(CodeMessage.DBAddError, "DBAddError");
                 }
             }            
-            return msg;
+            return "";
         }
 
         /// <summary>
@@ -138,17 +105,11 @@ namespace ACBC.Buss
         /// <param name="param"></param>
         /// <returns></returns>
         public AddEmployeeParam Do_CheckOldStoreCode(BaseApi baseApi)
-        {
-            AddEmployeeParam msg = new AddEmployeeParam();           
+        {                      
             string shopId = Util.GetUserShopId(baseApi.token);
             EmployeeDao employeeDao = new EmployeeDao();
-            DataTable dt = employeeDao.CheckOldStoreId(shopId);
-            if (dt.Rows.Count > 0  )
-            {
-                msg.storeCode = dt.Rows[0]["store_code"].ToString();
-                msg.state= dt.Rows[0]["state"].ToString();
-            }
-            
+            AddEmployeeParam msg = employeeDao.CheckOldStoreId(shopId);           
+           
             return msg;
         }
     }

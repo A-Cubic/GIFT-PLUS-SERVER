@@ -44,13 +44,13 @@ namespace ACBC.Buss
     public class ChoseGoodsParam
     {
         public string goodsId;// 
-        public string type;//0删除，1添加
+        public bool type;//0删除，1添加
     }
 
     public class AddActiveParam
     {
         public string activeType;//活动类型
-        public string[] activeTime;//活动时间
+        public DateTime[] activeTime;//活动时间
         public string activeRemark;//活动标题
         public string consume;//钱数
         public string heartItemValue;//心值

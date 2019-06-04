@@ -6,18 +6,36 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Com.ACBC.Framework.Database;
+using ACBC.Common;
 
 namespace ACBC.Dao
 {
     public class EmployeeDao
     {
-        public DataTable EmployeeLogon(string shopId, EmployeeLogonParam employeeLogonParam)
+        public PageResult EmployeeLogon(string shopId, EmployeeLogonParam employeeLogonParam)
         {
+            PageResult pageResult = new PageResult();
+            pageResult.pagination = new Page(employeeLogonParam.current, employeeLogonParam.pageSize);
+            pageResult.list = new List<object>();
             StringBuilder selectBuilder = new StringBuilder();
             selectBuilder.AppendFormat(EmployeeSql.SELECT_T_BASE_STORE_USER_BY_STORE_ID, shopId);
             string select = selectBuilder.ToString();
             DataTable dt = DatabaseOperationWeb.ExecuteSelectDS(select,"T").Tables[0];
-            return dt;
+            if (dt.Rows.Count > 0)
+            {
+                for (int i = (employeeLogonParam.current - 1) * employeeLogonParam.pageSize; i < dt.Rows.Count && i < employeeLogonParam.current * employeeLogonParam.pageSize; i++)
+                {
+                    EmployeeLogonItem employeeLogonItem = new EmployeeLogonItem();
+                    employeeLogonItem.key = i + 1;
+                    employeeLogonItem.img = dt.Rows[i]["store_user_img"].ToString();
+                    employeeLogonItem.userName = dt.Rows[i]["store_user_name"].ToString();
+                    employeeLogonItem.phone = dt.Rows[i]["store_user_phone"].ToString();
+                    employeeLogonItem.sex = dt.Rows[i]["store_user_sex"].ToString() == "1" ? "男" : "女";
+                    pageResult.list.Add(employeeLogonItem);
+                }
+            }
+            pageResult.pagination.total = dt.Rows.Count;
+            return pageResult;
         }
 
         public DataTable CheckStoreCode(AddEmployeeParam addEmployeeParam)
@@ -68,13 +86,19 @@ namespace ACBC.Dao
             }
         }
 
-        public DataTable CheckOldStoreId(string shopId)
+        public AddEmployeeParam CheckOldStoreId(string shopId)
         {
+            AddEmployeeParam msg = new AddEmployeeParam();
             StringBuilder selectBuilder = new StringBuilder();
             selectBuilder.AppendFormat(EmployeeSql.SELECT_T_BUSS_STORE_CODE_BY_STORE_ID, shopId);
             string select = selectBuilder.ToString();
             DataTable dt = DatabaseOperationWeb.ExecuteSelectDS(select, "T").Tables[0];
-            return dt;
+            if (dt.Rows.Count > 0)
+            {
+                msg.storeCode = dt.Rows[0]["store_code"].ToString();
+                msg.state = dt.Rows[0]["state"].ToString();
+            }
+            return msg;
         }
     }
 

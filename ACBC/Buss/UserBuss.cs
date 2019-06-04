@@ -49,10 +49,8 @@ namespace ACBC.Buss
             }
             else
             {
-                userLoginItem.isonload = false;
-                userLoginItem.msg = "用户名或密码错误";
+                throw new ApiException(CodeMessage.ErrorLogin, "ErrorLogin");
             }
-            return userLoginItem;
         }
 
         /// <summary>
@@ -60,19 +58,14 @@ namespace ACBC.Buss
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public MsgResult Do_UserLogout(BaseApi baseApi)
-        {
-            MsgResult msg = new MsgResult();
+        public string Do_UserLogout(BaseApi baseApi)
+        {           
             UserLoginParam userLoginParam = JsonConvert.DeserializeObject<UserLoginParam>(baseApi.param.ToString());
-            if (Util.DeleteRedis(baseApi.token))
+            if (!Util.DeleteRedis(baseApi.token))
             {
-                msg.type = 1;
-            }
-            else
-            {
-                msg.msg = "登出失败";
+                throw new ApiException(CodeMessage.ErrorLogout, "ErrorLogout");
             }           
-            return msg;
+            return "";
         }
     }    
 }

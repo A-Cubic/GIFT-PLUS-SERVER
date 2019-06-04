@@ -99,45 +99,57 @@ namespace ACBC.Buss
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public MsgResult Do_AddActive(BaseApi baseApi)
+        public string Do_AddActive(BaseApi baseApi)
         {
-            MsgResult msg = new MsgResult();
-            msg.msg = "";
             AddActiveParam addActiveParam = JsonConvert.DeserializeObject<AddActiveParam>(baseApi.param.ToString());
             if (addActiveParam.activeType == "" && addActiveParam.activeType == null)
             {
-                msg.msg = "活动类型不能为空";
-                return msg;
+                throw new ApiException(CodeMessage.InvalidActiveType, "InvalidActiveType");
             }
             else if(addActiveParam.activeType == "0")
             {
                 if (addActiveParam.consume == "" || addActiveParam.consume == null || !double.TryParse(addActiveParam.consume, out double d))
                 {
-                    msg.msg = "请填写正确钱数";
-                    return msg;
+                    throw new ApiException(CodeMessage.InvalidConsume, "InvalidConsume");
                 } 
             }
-            if (addActiveParam.activeTime==null || addActiveParam.activeTime.Length!=2)
+            if (addActiveParam.activeTime == null || addActiveParam.activeTime.Length != 2)
             {
-                msg.msg = "请填写正确的活动时间";
-                return msg;
+                throw new ApiException(CodeMessage.InvalidTime, "InvalidTime");
+            }
+            else
+            {
+                addActiveParam.activeTime[0] = Convert.ToDateTime(addActiveParam.activeTime[0].ToString("yyyy-MM-dd hh:mm:ss")) ;
+                addActiveParam.activeTime[1] = Convert.ToDateTime(addActiveParam.activeTime[1].ToString("yyyy-MM-dd hh:mm:ss"));
             }
             if (addActiveParam.activeRemark=="" && addActiveParam.activeRemark ==null)
             {
-                msg.msg = "活动标题不能为空";
-                return msg;
+                throw new ApiException(CodeMessage.InvalidRemark, "InvalidRemark");
             }
             if ((addActiveParam.heartItemValue == null || addActiveParam.heartItemValue == "") && (addActiveParam.limitItemValue == null || addActiveParam.limitItemValue == "") && (addActiveParam.list == null || addActiveParam.list.Count == 0))
             {
-                msg.msg = "活动奖品不能为空";
-                return msg;
-            }                                     
+                throw new ApiException(CodeMessage.InvalidGift, "InvalidGift");
+            }
+            if (addActiveParam.list!=null)
+            {
+                for (int i=0;i< addActiveParam.list.Count;i++)
+                {
+                    if (addActiveParam.list[i].goodsId==null || addActiveParam.list[i].goodsId =="")
+                    {
+                        throw new ApiException(CodeMessage.InvalidGoodsIdCode, "InvalidGoodsIdCode");
+                    }
+                    if (addActiveParam.list[i].goodsNums == null || addActiveParam.list[i].goodsNums == "")
+                    {
+                        throw new ApiException(CodeMessage.InvalidGoodsNumCode, "InvalidGoodsNumCode");
+                    }
+                }                
+            }
             string shopId = Util.GetUserShopId(baseApi.token);
             ActiveDao activeDao = new ActiveDao();
             if (activeDao.InsertAddActive(addActiveParam, shopId))
             {
-                DataTable dt = activeDao.SelectAddActive(addActiveParam, shopId);
-                string id = dt.Rows[0][0].ToString();
+                string id = activeDao.SelectAddActive(addActiveParam, shopId);
+                 
                 if (addActiveParam.activeType == "0")
                 {
                     if (addActiveParam.heartItemValue != null && addActiveParam.heartItemValue != "")
@@ -145,14 +157,20 @@ namespace ACBC.Buss
                         addActiveParam.itemNums = "1";
                         addActiveParam.ItemValue = addActiveParam.heartItemValue;
                         addActiveParam.valueType = "1";
-                        msg.type = activeDao.InsertActiveConsume(addActiveParam, id) == true ? 1 : 0;
+                        if (!activeDao.InsertActiveConsume(addActiveParam, id))
+                        {
+                            throw new ApiException(CodeMessage.DBAddError, "DBAddError");
+                        }
                     }
                     if (addActiveParam.limitItemValue!=null && addActiveParam.limitItemValue !="")
                     {
                         addActiveParam.itemNums = "1";
                         addActiveParam.ItemValue = addActiveParam.limitItemValue;
                         addActiveParam.valueType = "2";
-                        msg.type = activeDao.InsertActiveConsume(addActiveParam, id) == true ? 1 : 0;
+                        if (!activeDao.InsertActiveConsume(addActiveParam, id))
+                        {
+                            throw new ApiException(CodeMessage.DBAddError, "DBAddError");
+                        }
                     }
                     if (addActiveParam.list != null && addActiveParam.list.Count >0)
                     {                        
@@ -161,7 +179,10 @@ namespace ACBC.Buss
                         {
                             addActiveParam.itemNums = addActiveParam.list[i].goodsNums;
                             addActiveParam.ItemValue = addActiveParam.list[i].goodsId;
-                            msg.type = activeDao.InsertActiveConsume(addActiveParam, id) == true ? 1 : 0;
+                            if (!activeDao.InsertActiveConsume(addActiveParam, id))
+                            {
+                                throw new ApiException(CodeMessage.DBAddError, "DBAddError");
+                            }
                         }                      
                     }
                 }
@@ -172,14 +193,20 @@ namespace ACBC.Buss
                         addActiveParam.itemNums = "1";
                         addActiveParam.ItemValue = addActiveParam.heartItemValue;
                         addActiveParam.valueType = "1";
-                        msg.type = activeDao.InsertActiveCheck(addActiveParam, id) == true ? 1 : 0;
+                        if (!activeDao.InsertActiveCheck(addActiveParam, id))
+                        {
+                            throw new ApiException(CodeMessage.DBAddError, "DBAddError");
+                        }
                     }
                     if (addActiveParam.limitItemValue != null && addActiveParam.limitItemValue != "")
                     {
                         addActiveParam.itemNums = "1";
                         addActiveParam.ItemValue = addActiveParam.limitItemValue;
                         addActiveParam.valueType = "2";
-                        msg.type = activeDao.InsertActiveCheck(addActiveParam, id) == true ? 1 : 0;
+                        if (!activeDao.InsertActiveCheck(addActiveParam, id))
+                        {
+                            throw new ApiException(CodeMessage.DBAddError, "DBAddError");
+                        }
                     }
                     if (addActiveParam.list != null && addActiveParam.list.Count > 0)
                     {
@@ -188,17 +215,24 @@ namespace ACBC.Buss
                         {
                             addActiveParam.itemNums = addActiveParam.list[i].goodsNums;
                             addActiveParam.ItemValue = addActiveParam.list[i].goodsId;
-                            msg.type = activeDao.InsertActiveCheck(addActiveParam, id) == true ? 1 : 0;
+                            if (!activeDao.InsertActiveCheck(addActiveParam, id))
+                            {
+                                throw new ApiException(CodeMessage.DBAddError, "DBAddError");
+                            }
                         }
                     }
-                    msg.type = activeDao.InsertActiveCheck(addActiveParam, id) == true ? 1 : 0;
+                    if (!activeDao.InsertActiveCheck(addActiveParam, id))
+                    {
+                        throw new ApiException(CodeMessage.DBAddError, "DBAddError");
+                    }
                 }
             }
             else
             {
-                msg.msg = "Insert Buss_Active wrong";
+                throw new ApiException(CodeMessage.DBAddError, "DBAddError");
             }
-            return msg;
+            activeDao.DeleteActiveGoods(shopId);
+            return "";
         }
 
         /// <summary>
@@ -206,46 +240,32 @@ namespace ACBC.Buss
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public MsgResult Do_ChoseGoods(BaseApi baseApi)
+        public string Do_ChoseGoods(BaseApi baseApi)
         {
             MsgResult msg = new MsgResult();
             ChoseGoodsParam choseGoodsParam = JsonConvert.DeserializeObject<ChoseGoodsParam>(baseApi.param.ToString());
-            if (choseGoodsParam.goodsId=="" && choseGoodsParam.goodsId == null)
+            if (choseGoodsParam.goodsId=="" || choseGoodsParam.goodsId == null)
             {
-                msg.msg = "goodsId不能为空";
-                return msg;
-            }
-            if (choseGoodsParam.type=="" && choseGoodsParam.type ==null )
-            {
-                msg.msg = "type不能为空";
-                return msg;
+                throw new ApiException(CodeMessage.InvalidGoodsIdCode, "InvalidGoodsIdCode");
             }
             
             string shopId = Util.GetUserShopId(baseApi.token);
             ActiveDao activeDao = new ActiveDao();
-            if (choseGoodsParam.type == "1")
+            if (choseGoodsParam.type)
             {
-                if (activeDao.InsertActiveGoods(shopId, choseGoodsParam))
+                if (!activeDao.InsertActiveGoods(shopId, choseGoodsParam))
                 {
-                    msg.type = 1;
-                }
-                else
-                {
-                    msg.msg = "添加失败";
+                    throw new ApiException(CodeMessage.DBAddError, "DBAddError");
                 }
             }
             else
             {
-                if (activeDao.DeleteActiveGoods(shopId, choseGoodsParam))
+                if (!activeDao.DeleteActiveGoods(shopId, choseGoodsParam))
                 {
-                    msg.type = 1;
-                }
-                else
-                {
-                    msg.msg = "删除失败";
+                    throw new ApiException(CodeMessage.DBDelError, "DBDelError");
                 }                
             }
-            return msg;
+            return "";
         }
 
         /// <summary>
@@ -256,14 +276,16 @@ namespace ACBC.Buss
         public PageResult Do_GoodsList(BaseApi baseApi)
         {
             PageResult pageResult = new PageResult();
-            pageResult.list = new List<object>();            
+            ActiveDao activeDao = new ActiveDao();
+            string shopId = Util.GetUserShopId(baseApi.token);
             GoodsListParam goodsListParam = JsonConvert.DeserializeObject<GoodsListParam>(baseApi.param.ToString());
             if (goodsListParam.current==0)
             {
                 goodsListParam.current = 1;
             }
             if (goodsListParam.pageSize==0)
-            {
+            { 
+                activeDao.DeleteActiveGoods(shopId);
                 goodsListParam.pageSize = 10;
             }
             if (goodsListParam.goodsName != null && goodsListParam.goodsName != "")
@@ -273,34 +295,8 @@ namespace ACBC.Buss
             else
             {
                 goodsListParam.goodsName = "";
-            }
-            pageResult.pagination = new Page(goodsListParam.current, goodsListParam.pageSize);
-            string shopId = Util.GetUserShopId(baseApi.token);
-            ActiveDao activeDao = new ActiveDao();
-            activeDao.DeleteActiveGoods(shopId);
-            DataTable dt = activeDao.SelectGoods(goodsListParam);
-            if (dt.Rows.Count>0)
-            {
-                DataTable dtchose = activeDao.SelectActiveGoods(shopId);
-                int count = dtchose.Rows.Count;
-                for (int i= (goodsListParam.current-1)* goodsListParam.pageSize; i< dt.Rows.Count && i< goodsListParam.current* goodsListParam.pageSize;i++)
-                {
-                    GoodsListItem goodsListItem = new GoodsListItem();
-                    goodsListItem.key = i + 1;
-                    goodsListItem.goodsName = dt.Rows[i]["goods_name"].ToString();
-                    goodsListItem.goodsId = dt.Rows[i]["goods_id"].ToString();
-                    goodsListItem.goodsCost= dt.Rows[i]["goods_cost"].ToString();
-                    goodsListItem.goodsPrice = dt.Rows[i]["goods_price"].ToString();
-                    goodsListItem.goodsNum = dt.Rows[i]["goods_stock"].ToString();
-                    goodsListItem.img= dt.Rows[i]["goods_img"].ToString();
-                    if (count>0)
-                    {
-                        goodsListItem.ifchose = dtchose.Select("goodsId='"+ goodsListItem.goodsId + "'").Length==1?1:0;
-                    }
-                    pageResult.list.Add(goodsListItem);
-                }
-            }
-            pageResult.pagination.total = dt.Rows.Count;
+            }                               
+            pageResult = activeDao.SelectGoods(goodsListParam, shopId);          
             return pageResult;
         }
 
@@ -320,53 +316,15 @@ namespace ACBC.Buss
             {
                 goodsListParam.pageSize = 10;
             }
-            PageResult pageResult = new PageResult();
-            pageResult.list = new List<object>();
-            pageResult.pagination = new Page(goodsListParam.current, goodsListParam.pageSize);
+            PageResult pageResult = new PageResult();                       
             string shopId = Util.GetUserShopId(baseApi.token);
             ActiveDao activeDao = new ActiveDao();
-            DataTable dt= activeDao.SelectActiveGoods(shopId);
-            string barcodes = "";
-            if (dt.Rows.Count > 0)
+            string barcodes = activeDao.SelectActiveGoods(shopId);
+            if (barcodes!="")
             {
-                for (int i = 0; i < dt.Rows.Count; i++)
-                {
-                    if (i == 0)
-                    {
-                        barcodes += " and goods_id in ( '" + dt.Rows[i]["goodsId"].ToString() + "',";
-                    }
-                    else if (i == (dt.Rows.Count - 1))
-                    {
-                        barcodes += " '" + dt.Rows[i]["goodsId"].ToString() + "') ";
-                    }
-                    else
-                    {
-                        barcodes += " '" + dt.Rows[i]["goodsId"].ToString() + "',";
-                    }
-                }
-                DataTable dtGoods = activeDao.SelectGoods(barcodes);
-                if (dtGoods.Rows.Count > 0)
-                {
-                    for (int j = (goodsListParam.current - 1) * goodsListParam.pageSize; j < dtGoods.Rows.Count && j < goodsListParam.current * goodsListParam.pageSize; j++)
-                    {
-                        GoodsListItem goodsListItem = new GoodsListItem();
-                        goodsListItem.key = j + 1;
-                        goodsListItem.goodsName = dtGoods.Rows[j]["goods_name"].ToString();
-                        goodsListItem.goodsId = dtGoods.Rows[j]["goods_id"].ToString();
-                        goodsListItem.goodsCost = dtGoods.Rows[j]["goods_cost"].ToString();
-                        goodsListItem.goodsPrice = dtGoods.Rows[j]["goods_price"].ToString();
-                        goodsListItem.goodsNum = dtGoods.Rows[j]["goods_stock"].ToString();
-                        goodsListItem.img = dtGoods.Rows[j]["goods_img"].ToString();
-                        pageResult.list.Add(goodsListItem);
-                    }
-                }
-                pageResult.pagination.total = dtGoods.Rows.Count;
-                activeDao.DeleteActiveGoods(shopId);
-            }
-            else
-            {
-                pageResult.pagination.total = 0;
-            }
+                pageResult = activeDao.SelectGoods(barcodes, goodsListParam);               
+                //activeDao.DeleteActiveGoods(shopId);
+            }            
             return pageResult;
         }
 
@@ -375,23 +333,23 @@ namespace ACBC.Buss
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public MsgResult Do_ChangeGoodsNum(BaseApi baseApi)
+        public string Do_ChangeGoodsNum(BaseApi baseApi)
         {
-            MsgResult msg = new MsgResult();
             AddActiveList addActiveList = JsonConvert.DeserializeObject<AddActiveList>(baseApi.param.ToString());
             if (addActiveList.goodsId==null || addActiveList.goodsId == "")
             {
-                msg.msg = "商品号不能为空";                
+                throw new ApiException(CodeMessage.InvalidGoodsIdCode, "InvalidGoodsIdCode");              
             }
             if (addActiveList.goodsNums == null || addActiveList.goodsNums == "")
             {
-                msg.msg = "商品数量不能为空";
+                throw new ApiException(CodeMessage.InvalidGoodsNumCode, "InvalidGoodsNumCode");
             }
-            if (msg.msg != null)
-                return msg;
             ActiveDao activeDao = new ActiveDao();
-            msg.type= activeDao.UpdateActiveGoods(addActiveList)==true?1:0;
-            return msg;
+            if (!activeDao.UpdateActiveGoods(addActiveList))
+            {
+                throw new ApiException(CodeMessage.DBUpdateError, "DBUpdateError");
+            }
+            return ""; 
         }
     }     
 }

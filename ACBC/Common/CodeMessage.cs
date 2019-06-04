@@ -16,17 +16,37 @@ namespace ACBC.Common
         AppIDError = 201,
         SignError = 202,
 
+        ErrorLogin=401,//登录失败
+        ErrorLogout = 402,//登出失败
         NotFound = 404,
         InnerError = 500,
+        DBAddError =601,//插入数据库错误
+        DBDelError=602,//删除数据库错误
+        DBUpdateError = 603,//更新数据库错误
 
         InvalidToken = 4000,
         InvalidMethod = 4001,
         InvalidParam = 4002,
         InterfaceRole = 4003,
         InterfaceValueError = 4004,
-        InterfaceDBError = 4005,
+        InterfaceDBError = 4005,//操作数据库错误
         NeedLogin = 4006,
         InvalidCode = 4007,
+        InsufficientAuthority=5001,//权限不足
+        CodeError=6000,//验证码错误
+        CodeRepeat=6001,//验证码重复
+        ErrorLogonNum=6002,//错误注册数量
+
+        InvalidGoodsIdCode=7001,//商品id错误
+        InvalidGoodsNumCode = 7002,//商品数量错误
+
+        InvalidActiveType=8001,//活动类型错误
+        InvalidConsume=8002,//填写钱数错误
+        InvalidTime=8003,//时间错误
+        InvalidRemark=8004,//活动标题错误
+        InvalidGift=8005,//礼品错误
+        InvalidStatus=8006,//状态错误
+
 
         InvalidEnvAndGroup = 5000,
     }

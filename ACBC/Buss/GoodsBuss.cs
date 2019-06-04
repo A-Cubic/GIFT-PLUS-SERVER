@@ -40,21 +40,17 @@ namespace ACBC.Buss
             {
                 stockStatisticsParam.status = " and v.state='1' ";
             }
-            else if(stockStatisticsParam.status == "已到店")
+            else if (stockStatisticsParam.status == "已到店")
             {
                 stockStatisticsParam.status = " and v.state!='1' ";
             }
+            else
+            {
+                throw new ApiException(CodeMessage.InvalidStatus, "InvalidStatus");
+            }
             pageResult.pagination = new Page(stockStatisticsParam.current, stockStatisticsParam.pageSize);
             StockStatisticsItem stockStatisticsItem = new StockStatisticsItem();
-            var userId = "";
-            var shopId = "";
-            using (var client= ConnectionMultiplexer.Connect(Global.Redis))
-            {
-                var db = client.GetDatabase(0);
-                string[] redisValue = db.StringGet(baseApi.token).ToString().Split(",");
-                userId = redisValue[0];
-                shopId= redisValue[1];
-            }
+            var shopId = Util.GetUserShopId(baseApi.token);        
             GoodsDao giftManageDao = new GoodsDao();
             int allGoods = 0;
             int movinGoods = 0;
