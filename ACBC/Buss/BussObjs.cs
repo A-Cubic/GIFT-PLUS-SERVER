@@ -44,13 +44,13 @@ namespace ACBC.Buss
     public class ChoseGoodsParam
     {
         public string goodsId;// 
-        public bool type;//0删除，1添加
+        public bool type;//false删除，true添加
     }
 
     public class AddActiveParam
     {
         public string activeType;//活动类型
-        public DateTime[] activeTime;//活动时间
+        public DateTime[] date;//活动时间
         public string activeRemark;//活动标题
         public string consume;//钱数
         public string heartItemValue;//心值
@@ -161,7 +161,8 @@ namespace ACBC.Buss
         public string img;
         public string goodsCost;//进货价
         public string goodsPrice;//售价
-        public string goodsNum;
+        public string goodsNum;//库存
+        public string goodsNums;//商品数量
         public int ifchose;//0未选中，1选中
     }
 

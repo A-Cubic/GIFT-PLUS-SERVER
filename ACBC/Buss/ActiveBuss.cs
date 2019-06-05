@@ -102,7 +102,20 @@ namespace ACBC.Buss
         public string Do_AddActive(BaseApi baseApi)
         {
             AddActiveParam addActiveParam = JsonConvert.DeserializeObject<AddActiveParam>(baseApi.param.ToString());
-            if (addActiveParam.activeType == "" && addActiveParam.activeType == null)
+            if (addActiveParam.activeRemark == "" || addActiveParam.activeRemark == null)
+            {
+                throw new ApiException(CodeMessage.InvalidRemark, "InvalidRemark");
+            }
+            if (addActiveParam.date == null || addActiveParam.date.Length != 2)
+            {
+                throw new ApiException(CodeMessage.InvalidTime, "InvalidTime");
+            }
+            else
+            {
+                addActiveParam.date[0] = Convert.ToDateTime(addActiveParam.date[0].ToString("yyyy-MM-dd hh:mm:ss"));
+                addActiveParam.date[1] = Convert.ToDateTime(addActiveParam.date[1].ToString("yyyy-MM-dd hh:mm:ss"));
+            }
+            if (addActiveParam.activeType == "" || addActiveParam.activeType == null)
             {
                 throw new ApiException(CodeMessage.InvalidActiveType, "InvalidActiveType");
             }
@@ -112,20 +125,7 @@ namespace ACBC.Buss
                 {
                     throw new ApiException(CodeMessage.InvalidConsume, "InvalidConsume");
                 } 
-            }
-            if (addActiveParam.activeTime == null || addActiveParam.activeTime.Length != 2)
-            {
-                throw new ApiException(CodeMessage.InvalidTime, "InvalidTime");
-            }
-            else
-            {
-                addActiveParam.activeTime[0] = Convert.ToDateTime(addActiveParam.activeTime[0].ToString("yyyy-MM-dd hh:mm:ss")) ;
-                addActiveParam.activeTime[1] = Convert.ToDateTime(addActiveParam.activeTime[1].ToString("yyyy-MM-dd hh:mm:ss"));
-            }
-            if (addActiveParam.activeRemark=="" && addActiveParam.activeRemark ==null)
-            {
-                throw new ApiException(CodeMessage.InvalidRemark, "InvalidRemark");
-            }
+            }                    
             if ((addActiveParam.heartItemValue == null || addActiveParam.heartItemValue == "") && (addActiveParam.limitItemValue == null || addActiveParam.limitItemValue == "") && (addActiveParam.list == null || addActiveParam.list.Count == 0))
             {
                 throw new ApiException(CodeMessage.InvalidGift, "InvalidGift");
@@ -248,7 +248,7 @@ namespace ACBC.Buss
             {
                 throw new ApiException(CodeMessage.InvalidGoodsIdCode, "InvalidGoodsIdCode");
             }
-            
+           
             string shopId = Util.GetUserShopId(baseApi.token);
             ActiveDao activeDao = new ActiveDao();
             if (choseGoodsParam.type)
@@ -350,6 +350,22 @@ namespace ACBC.Buss
                 throw new ApiException(CodeMessage.DBUpdateError, "DBUpdateError");
             }
             return addActiveList; 
+        }
+
+        /// <summary>
+        /// 删除勾选商品
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public string Do_DeleteActiveGoods(BaseApi baseApi)
+        {
+            string shopId = Util.GetUserShopId(baseApi.token);
+            ActiveDao activeDao = new ActiveDao();
+            if (!activeDao.DeleteActiveGoods(shopId))
+            {
+                throw new ApiException(CodeMessage.DBDelError, "DBDelError");
+            }
+            return "";
         }
     }     
 }

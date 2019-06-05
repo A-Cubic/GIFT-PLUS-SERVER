@@ -42,7 +42,7 @@ namespace ACBC.Dao
         public bool InsertAddActive(AddActiveParam addActiveParam,string shopId)
         {
             StringBuilder selectBuilder = new StringBuilder();
-            selectBuilder.AppendFormat(ActiceSqls.INSERT_T_BUSS_ACTIVE, shopId, addActiveParam.activeType, addActiveParam.activeTime[0], addActiveParam.activeTime[1], addActiveParam.activeRemark);
+            selectBuilder.AppendFormat(ActiceSqls.INSERT_T_BUSS_ACTIVE, shopId, addActiveParam.activeType, addActiveParam.date[0], addActiveParam.date[1], addActiveParam.activeRemark);
             string select = selectBuilder.ToString();
             if (DatabaseOperationWeb.ExecuteDML(select))
             {
@@ -58,7 +58,7 @@ namespace ACBC.Dao
         {
             StringBuilder selectBuilder = new StringBuilder();
             selectBuilder.AppendFormat(ActiceSqls.SELECT_T_BUSS_ACTIVE_BY_ACTIVE_ID,
-                shopId, addActiveParam.activeType, addActiveParam.activeTime[0], addActiveParam.activeTime[1], addActiveParam.activeRemark);
+                shopId, addActiveParam.activeType, addActiveParam.date[0], addActiveParam.date[1], addActiveParam.activeRemark);
             string select = selectBuilder.ToString();
             string id="";
             DataTable dt = DatabaseOperationWeb.ExecuteSelectDS(select, "T").Tables[0];
@@ -202,6 +202,7 @@ namespace ACBC.Dao
                     goodsListItem.goodsPrice = dt.Rows[i]["goods_price"].ToString();
                     goodsListItem.goodsNum = dt.Rows[i]["goods_stock"].ToString();
                     goodsListItem.img = dt.Rows[i]["goods_img"].ToString();
+                    goodsListItem.goodsNums = "1";
                     if (count > 0)
                     {
                         goodsListItem.ifchose = dtchose.Select("goodsId='" + goodsListItem.goodsId + "'").Length == 1 ? 1 : 0;
@@ -234,6 +235,7 @@ namespace ACBC.Dao
                     goodsListItem.goodsPrice = dtGoods.Rows[j]["goods_price"].ToString();
                     goodsListItem.goodsNum = dtGoods.Rows[j]["goods_stock"].ToString();
                     goodsListItem.img = dtGoods.Rows[j]["goods_img"].ToString();
+                    goodsListItem.goodsNums = "1";
                     pageResult.list.Add(goodsListItem);
                 }
             }

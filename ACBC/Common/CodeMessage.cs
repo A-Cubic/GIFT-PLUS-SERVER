@@ -24,6 +24,7 @@ namespace ACBC.Common
         DBDelError=602,//删除数据库错误
         DBUpdateError = 603,//更新数据库错误
 
+
         InvalidToken = 4000,
         InvalidMethod = 4001,
         InvalidParam = 4002,
