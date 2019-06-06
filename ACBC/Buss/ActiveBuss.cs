@@ -112,8 +112,8 @@ namespace ACBC.Buss
             }
             else
             {
-                addActiveParam.date[0] = Convert.ToDateTime(addActiveParam.date[0].ToString("yyyy-MM-dd hh:mm:ss"));
-                addActiveParam.date[1] = Convert.ToDateTime(addActiveParam.date[1].ToString("yyyy-MM-dd hh:mm:ss"));
+                addActiveParam.date[0] = addActiveParam.date[1] + " 00:00:00";
+                addActiveParam.date[1] = addActiveParam.date[1] + " 23:59:59";
             }
             if (addActiveParam.activeType == "" || addActiveParam.activeType == null)
             {

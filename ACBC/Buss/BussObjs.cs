@@ -73,7 +73,7 @@ namespace ACBC.Buss
     public class AddActiveParam
     {
         public string activeType;//活动类型
-        public DateTime[] date;//活动时间
+        public string[] date;//活动时间
         public string activeRemark;//活动标题
         public string consume;//钱数
         public string heartItemValue;//心值
@@ -159,6 +159,7 @@ namespace ACBC.Buss
     public class UserLoginItem
     {
         public string userCode;//用户Code
+        public string avatar;//头像
         public string name;
         public string token;//token
         public string power;//权限
