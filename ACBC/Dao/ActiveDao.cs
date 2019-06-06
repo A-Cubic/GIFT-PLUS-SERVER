@@ -102,7 +102,7 @@ namespace ACBC.Dao
         public bool InsertActiveGoods(string shopId, ChoseGoodsParam  choseGoodsParam)
         {
             StringBuilder selectBuilder = new StringBuilder();
-            selectBuilder.AppendFormat(ActiceSqls.INSERT_T_ACTIVE_GOODS, shopId, choseGoodsParam.goodsId);
+            selectBuilder.AppendFormat(ActiceSqls.INSERT_T_BUSS_ACTIVE_GOODS, shopId, choseGoodsParam.goodsId);
             string select = selectBuilder.ToString();
             if (DatabaseOperationWeb.ExecuteDML(select))
             {
@@ -117,7 +117,7 @@ namespace ACBC.Dao
         public bool DeleteActiveGoods(string shopId, ChoseGoodsParam choseGoodsParam)
         {
             StringBuilder selectBuilder = new StringBuilder();
-            selectBuilder.AppendFormat(ActiceSqls.DELETE_T_ACTIVE_GOODS_BY_SHOPID_GOODSID, shopId, choseGoodsParam.goodsId);
+            selectBuilder.AppendFormat(ActiceSqls.DELETE_T_BUSS_ACTIVE_GOODS_BY_SHOPID_GOODSID, shopId, choseGoodsParam.goodsId);
             string select = selectBuilder.ToString();
             if (DatabaseOperationWeb.ExecuteDML(select))
             {
@@ -132,7 +132,7 @@ namespace ACBC.Dao
         public bool DeleteActiveGoods(string shopId)
         {
             StringBuilder selectBuilder = new StringBuilder();
-            selectBuilder.AppendFormat(ActiceSqls.DELETE_T_ACTIVE_GOODS_BY_SHOPID, shopId);
+            selectBuilder.AppendFormat(ActiceSqls.DELETE_T_BUSS_ACTIVE_GOODS_BY_SHOPID, shopId);
             string select = selectBuilder.ToString();
             if (DatabaseOperationWeb.ExecuteDML(select))
             {
@@ -147,7 +147,7 @@ namespace ACBC.Dao
         public string  SelectActiveGoods(string shopId)
         {
             StringBuilder selectBuilder = new StringBuilder();
-            selectBuilder.AppendFormat(ActiceSqls.SELECT_T_ACTIVE_GOODS_BY_SHOPID, shopId);
+            selectBuilder.AppendFormat(ActiceSqls.SELECT_T_BUSS_ACTIVE_GOODS_BY_SHOPID, shopId);
             string select = selectBuilder.ToString();
             DataTable dt = DatabaseOperationWeb.ExecuteSelectDS(select, "T").Tables[0];
             string barcodes = "";
@@ -188,7 +188,7 @@ namespace ACBC.Dao
             if (dt.Rows.Count>0)
             {
                 StringBuilder selectBuilder1 = new StringBuilder();
-                selectBuilder1.AppendFormat(ActiceSqls.SELECT_T_ACTIVE_GOODS_BY_SHOPID, shopId);
+                selectBuilder1.AppendFormat(ActiceSqls.SELECT_T_BUSS_ACTIVE_GOODS_BY_SHOPID, shopId);
                 string select1 = selectBuilder1.ToString();
                 DataTable dtchose = DatabaseOperationWeb.ExecuteSelectDS(select1, "T").Tables[0];
                 for (int i = (goodsListParam.current - 1) * goodsListParam.pageSize; i < dt.Rows.Count && i < goodsListParam.current * goodsListParam.pageSize; i++)
@@ -246,7 +246,7 @@ namespace ACBC.Dao
         public bool UpdateActiveGoods(AddActiveList addActiveList)
         {
             StringBuilder selectBuilder = new StringBuilder();
-            selectBuilder.AppendFormat(ActiceSqls.UPDATE_T_ACTIVE_GOODS_BY_NUM_AND_GOODSID, addActiveList.goodsNums, addActiveList.goodsId);
+            selectBuilder.AppendFormat(ActiceSqls.UPDATE_T_BUSS_ACTIVE_GOODS_BY_NUM_AND_GOODSID, addActiveList.goodsNums, addActiveList.goodsId);
             string select = selectBuilder.ToString();
             if (DatabaseOperationWeb.ExecuteDML(select))
             {
@@ -261,8 +261,8 @@ namespace ACBC.Dao
 
     public class ActiceSqls
     {
-        public const string UPDATE_T_ACTIVE_GOODS_BY_NUM_AND_GOODSID = ""
-            + "UPDATE T_ACTIVE_GOODS "
+        public const string UPDATE_T_BUSS_ACTIVE_GOODS_BY_NUM_AND_GOODSID = ""
+            + "UPDATE T_BUSS_ACTIVE_GOODS "
             + " SET NUM='{0}' "
             + " WHERE GOODSID='{1}'";
 
@@ -271,21 +271,21 @@ namespace ACBC.Dao
             + " FROM T_BUSS_GOODS "
             + " WHERE IF_USE='1' AND GOODS_STOCK>0 {0}";
 
-        public const string SELECT_T_ACTIVE_GOODS_BY_SHOPID = ""
+        public const string SELECT_T_BUSS_ACTIVE_GOODS_BY_SHOPID = ""
             + "SELECT GOODSID "
-            + " FROM T_ACTIVE_GOODS "
+            + " FROM T_BUSS_ACTIVE_GOODS "
             + " WHERE SHOPID='{0}' ";
 
-        public const string DELETE_T_ACTIVE_GOODS_BY_SHOPID = ""
-            + " DELETE FROM T_ACTIVE_GOODS "
+        public const string DELETE_T_BUSS_ACTIVE_GOODS_BY_SHOPID = ""
+            + " DELETE FROM T_BUSS_ACTIVE_GOODS "
             + " WHERE  SHOPID='{0}' ";
 
-        public const string DELETE_T_ACTIVE_GOODS_BY_SHOPID_GOODSID = ""
-            + " DELETE FROM T_ACTIVE_GOODS "
+        public const string DELETE_T_BUSS_ACTIVE_GOODS_BY_SHOPID_GOODSID = ""
+            + " DELETE FROM T_BUSS_ACTIVE_GOODS "
             + " WHERE  SHOPID='{0}' AND GOODSID='{1}'";
 
-        public const string INSERT_T_ACTIVE_GOODS = ""
-            + " INSERT INTO T_ACTIVE_GOODS(SHOPID,GOODSID) "
+        public const string INSERT_T_BUSS_ACTIVE_GOODS = ""
+            + " INSERT INTO T_BUSS_ACTIVE_GOODS(SHOPID,GOODSID) "
             + " VALUES('{0}','{1}')";
 
         public const string INSERT_T_BUSS_ACTIVE_CONSUME = ""
