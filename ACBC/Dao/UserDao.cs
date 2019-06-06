@@ -26,7 +26,7 @@ namespace ACBC.Dao
             if (dt.Rows.Count==1 && dt.Rows[0][0]!=DBNull.Value)
             {
                 userLoginItem.userCode= dt.Rows[0]["userCode"].ToString();
-                userLoginItem.authority = "https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png";
+                userLoginItem.authority = "http://ecc-product.oss-cn-beijing.aliyuncs.com/upload/head_s.png";
                 userLoginItem.name = dt.Rows[0]["USERNAME"].ToString();
                 userLoginItem.shopId= dt.Rows[0]["store_id"].ToString();
                 userLoginItem.power= dt.Rows[0]["userType"].ToString();

@@ -67,6 +67,7 @@ namespace ACBC.Buss
                 {                    
                     OrderListItem orderListItem = new OrderListItem();
                     orderListItem.key=  i + 1;
+                    orderListItem.img= dt.Rows[i]["MEMBER_IMG"].ToString();
                     orderListItem.num = dt.Rows[i]["num"].ToString();
                     orderListItem.orderCode= dt.Rows[i]["order_code"].ToString();
                     orderListItem.state = dt.Rows[i]["state"].ToString()=="1"?"预到店":"已到店";

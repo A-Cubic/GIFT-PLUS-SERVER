@@ -172,6 +172,7 @@ namespace ACBC.Buss
     public class OrderListItem
     {
         public int key;//序号
+        public string img;//
         public string state;//状态
         public string orderCode;//订单码
         public string num;//数量

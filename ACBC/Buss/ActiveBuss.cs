@@ -45,51 +45,58 @@ namespace ACBC.Buss
             pageResult.pagination = new Page(activeListParam.current, activeListParam.pageSize);
             string shopId = Util.GetUserShopId(baseApi.token);
             ActiveDao activeDao = new ActiveDao();
-            DataTable dt = activeDao.ActiveList(shopId, activeListParam);
-            pageResult.pagination.total = 0;
-            if (dt.Rows.Count>0)
+            try
             {
-                DataView dataView = new DataView(dt);
-                DataTable dt1 = dataView.ToTable(true, "active_id", "active_time_from", "active_time_to", "remark", "active_type");
-                for (int i= (activeListParam.current - 1)* activeListParam.pageSize;i< dt1.Rows.Count && i< activeListParam.current * activeListParam.pageSize;i++)
+                DataTable dt = activeDao.ActiveList(shopId, activeListParam);
+                pageResult.pagination.total = 0;
+                if (dt.Rows.Count > 0)
                 {
-                    ActiveListItem activeListItem = new ActiveListItem();
-                    activeListItem.img.Add("http://llwell-wxapp.oss-cn-beijing.aliyuncs.com/A-cubic/goods.png");
-                    activeListItem.img.Add("http://llwell-wxapp.oss-cn-beijing.aliyuncs.com/A-cubic/heart.png");
-                    activeListItem.img.Add("http://llwell-wxapp.oss-cn-beijing.aliyuncs.com/A-cubic/up.png");
-                    activeListItem.key =  i + 1;
-                    DataTable dtselect = new DataTable();
-                    if (dt1.Rows[i]["active_type"].ToString() == "0")
+                    DataView dataView = new DataView(dt);
+                    DataTable dt1 = dataView.ToTable(true, "active_id", "active_time_from", "active_time_to", "remark", "active_type");
+                    for (int i = (activeListParam.current - 1) * activeListParam.pageSize; i < dt1.Rows.Count && i < activeListParam.current * activeListParam.pageSize; i++)
                     {
-                        dtselect = activeDao.SelectActiveConsume(dt1.Rows[i]["active_id"].ToString());
-                    }
-                    else
-                    {
-                        dtselect = activeDao.SelectActiveCheck(dt1.Rows[i]["active_id"].ToString());
-                    }
-                    if (dtselect.Rows.Count > 0)
-                    {
-                        if (dtselect.Rows[0][0].ToString() == "0")
+                        ActiveListItem activeListItem = new ActiveListItem();
+                        activeListItem.img.Add("http://llwell-wxapp.oss-cn-beijing.aliyuncs.com/A-cubic/goods.png");
+                        activeListItem.img.Add("http://llwell-wxapp.oss-cn-beijing.aliyuncs.com/A-cubic/heart.png");
+                        activeListItem.img.Add("http://llwell-wxapp.oss-cn-beijing.aliyuncs.com/A-cubic/up.png");
+                        activeListItem.key = i + 1;
+                        DataTable dtselect = new DataTable();
+                        if (dt1.Rows[i]["active_type"].ToString() == "0")
                         {
-                            activeListItem.img[0] = "http://llwell-wxapp.oss-cn-beijing.aliyuncs.com/A-cubic/goodsred.png";
-                        }
-                        else if (dtselect.Rows[0][0].ToString() == "1")
-                        {
-                            activeListItem.img[1] = "http://llwell-wxapp.oss-cn-beijing.aliyuncs.com/A-cubic/heartred.png";
+                            dtselect = activeDao.SelectActiveConsume(dt1.Rows[i]["active_id"].ToString());
                         }
                         else
                         {
-                            activeListItem.img[2] = "http://llwell-wxapp.oss-cn-beijing.aliyuncs.com/A-cubic/upred.png";
+                            dtselect = activeDao.SelectActiveCheck(dt1.Rows[i]["active_id"].ToString());
                         }
+                        if (dtselect.Rows.Count > 0)
+                        {
+                            if (dtselect.Rows[0][0].ToString() == "0")
+                            {
+                                activeListItem.img[0] = "http://llwell-wxapp.oss-cn-beijing.aliyuncs.com/A-cubic/goodsred.png";
+                            }
+                            else if (dtselect.Rows[0][0].ToString() == "1")
+                            {
+                                activeListItem.img[1] = "http://llwell-wxapp.oss-cn-beijing.aliyuncs.com/A-cubic/heartred.png";
+                            }
+                            else
+                            {
+                                activeListItem.img[2] = "http://llwell-wxapp.oss-cn-beijing.aliyuncs.com/A-cubic/upred.png";
+                            }
+                        }
+                        activeListItem.title = dt1.Rows[i]["remark"].ToString();
+                        activeListItem.time = dt1.Rows[i]["active_time_from"].ToString() + "~" + dt1.Rows[i]["active_time_to"].ToString();
+                        activeListItem.drainage = dt.Select("member_name<>'' and active_id='" + dt1.Rows[i]["active_id"].ToString() + "'").Length.ToString();
+                        activeListItem.consumeNum = dt.Select("consume>'0' and active_id='" + dt1.Rows[i]["active_id"].ToString() + "'").Length.ToString();
+                        activeListItem.newUser = dataView.ToTable(true, "member_name", "active_id").Select("member_name<>'' and active_id = '" + dt1.Rows[i]["active_id"].ToString() + "'").Length.ToString();
+                        pageResult.list.Add(activeListItem);
                     }
-                    activeListItem.title = dt1.Rows[i]["remark"].ToString();
-                    activeListItem.time = dt1.Rows[i]["active_time_from"].ToString() + "~" + dt1.Rows[i]["active_time_to"].ToString();
-                    activeListItem.drainage = dt.Select("member_name<>'' and active_id='"+ dt1.Rows[i]["active_id"].ToString() + "'").Length.ToString();
-                    activeListItem.consumeNum= dt.Select("consume>'0' and active_id='" + dt1.Rows[i]["active_id"].ToString() + "'").Length.ToString();
-                    activeListItem.newUser = dataView.ToTable(true, "member_name", "active_id").Select("member_name<>'' and active_id = '" + dt1.Rows[i]["active_id"].ToString() + "'").Length.ToString();                    
-                    pageResult.list.Add(activeListItem);
+                    pageResult.pagination.total = dt1.Rows.Count;
                 }
-                pageResult.pagination.total = dt1.Rows.Count;
+            }
+            catch(Exception e)
+            {
+                throw new ApiException(CodeMessage.DBSelectError, e.StackTrace);
             }
             return pageResult;
         }
@@ -112,7 +119,7 @@ namespace ACBC.Buss
             }
             else
             {
-                addActiveParam.date[0] = addActiveParam.date[1] + " 00:00:00";
+                addActiveParam.date[0] = addActiveParam.date[0] + " 00:00:00";
                 addActiveParam.date[1] = addActiveParam.date[1] + " 23:59:59";
             }
             if (addActiveParam.activeType == "" || addActiveParam.activeType == null)

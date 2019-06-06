@@ -28,9 +28,9 @@ namespace ACBC.Dao
     public class OrderDaoSqls
     {
         public const string SELECT_V_ORDER_INFO_BY_STORE_ID = ""
-            + " SELECT STATE,ORDER_CODE,SUM(NUM) NUM ,SUM(GOODS_PRICE) PRICE,PAY_TIME "
-            + " FROM V_ORDER_INFO "
-            + " WHERE STORE_ID='{0}' {1} {2} {3} "
+            + " SELECT V.STATE,V.ORDER_CODE,SUM(V.NUM) NUM ,SUM(V.GOODS_PRICE) PRICE,V.PAY_TIME,M.MEMBER_IMG "
+            + " FROM V_ORDER_INFO V,T_BASE_MEMBER M "
+            + " WHERE V.MEMBER_NAME=M.MEMBER_NAME AND STORE_ID='{0}' {1} {2} {3} "
             + " GROUP BY ORDER_CODE "
             + " ORDER BY PAY_TIME DESC";
     }

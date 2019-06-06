@@ -23,7 +23,7 @@ namespace ACBC.Common
         DBAddError =601,//插入数据库错误
         DBDelError=602,//删除数据库错误
         DBUpdateError = 603,//更新数据库错误
-
+        DBSelectError=600,//数据库错误
 
         InvalidToken = 4000,
         InvalidMethod = 4001,
@@ -47,6 +47,7 @@ namespace ACBC.Common
         InvalidRemark=8004,//活动标题错误
         InvalidGift=8005,//礼品错误
         InvalidStatus=8006,//状态错误
+
 
 
         InvalidEnvAndGroup = 5000,
