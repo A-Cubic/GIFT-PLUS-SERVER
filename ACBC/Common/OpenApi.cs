@@ -18,6 +18,7 @@ namespace ACBC.Common
         EmployeeApi,
         MemberApi,
         ActiveApi,
+        ShowPageApi,
     }
 
     public enum CheckType
@@ -208,5 +209,26 @@ namespace ACBC.Common
         {
             return ApiType.ActiveApi;
         }
+    }
+
+    /// 完全开放
+    /// </summary>
+    public class ShowPageApi : BaseApi
+    {
+        public override CheckType GetCheckType()
+        {
+            return CheckType.Open;
+        }
+
+        public override InputType GetInputType()
+        {
+            return InputType.Body;
+        }
+
+        public override ApiType GetApiType()
+        {
+            return ApiType.ShowPageApi;
+        }
+
     }
 }

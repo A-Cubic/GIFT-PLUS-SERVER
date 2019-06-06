@@ -14,6 +14,8 @@ namespace ACBC.Common
 
         private static ConnectionMultiplexer redisConn;
 
+        public static object ConfigurationOption { get; internal set; }
+
         public static ConnectionMultiplexer getRedisConn()
         {
             if (redisConn == null)

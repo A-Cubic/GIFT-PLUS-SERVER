@@ -3,7 +3,10 @@ using ACBC.Dao;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ACBC.Common
@@ -80,6 +83,28 @@ namespace ACBC.Common
                     return false;
                 }
             }
+        }
+
+        public static string HttpPost(string url,string body,string contentType)
+        {
+            HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
+            httpWebRequest.ContentType = contentType;
+            httpWebRequest.Method = "POST";
+            httpWebRequest.Timeout = 20000;
+            byte[] tbyte = Encoding.UTF8.GetBytes(body);
+            httpWebRequest.ContentLength = tbyte.Length;
+            httpWebRequest.GetRequestStream().Write(tbyte, 0, tbyte.Length);
+
+            HttpWebResponse httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+            StreamReader streamReader = new StreamReader(httpWebResponse.GetResponseStream());
+            string responseContent = streamReader.ReadToEnd();
+
+            httpWebResponse.Close();
+            streamReader.Close();
+            httpWebRequest.Abort();
+            httpWebResponse.Close();
+
+            return responseContent;
         }
     }
    

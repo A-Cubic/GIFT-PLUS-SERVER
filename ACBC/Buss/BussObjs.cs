@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 
 namespace ACBC.Buss
 {
+
+    #region Sys
     public class GetConfigParam
     {
         public string env;
@@ -17,6 +19,12 @@ namespace ACBC.Buss
         public string group;
     }
 
+    public class RequestParam
+    {
+        public string method;
+        public object param;
+    }
+
     public class ConfigGroup
     {
         public string key;
@@ -27,11 +35,26 @@ namespace ACBC.Buss
         }
     }
 
+    public class ResponseObj
+    {
+        public bool success;
+        public ResponseMsg msg;
+        public List<ConfigItem> data;
+    }
+
+    public class ResponseMsg
+    {
+        public string code;
+        public string msg;
+    }
+
     public class ConfigItem
     {
         public string key;
         public string value;
     }
+
+    #endregion
 
     #region Param
     public class GoodsListParam
@@ -118,9 +141,25 @@ namespace ACBC.Buss
     #endregion
 
     #region Item
+
+    public class SimpleShowPageItem
+    {
+        public List<SimpleShowPageList> banners;
+        public List<SimpleShowPageList> menu;
+        public SimpleShowPageList button;
+    }
+
+    public class SimpleShowPageList
+    {
+        public string name;
+        public string url;
+        public string img;
+    }
+
     public class UserLoginItem
     {
         public string userCode;//用户Code
+        public string name;
         public string token;//token
         public string power;//权限
         public string authority;//前台权限

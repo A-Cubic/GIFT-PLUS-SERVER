@@ -98,5 +98,18 @@ namespace ACBC.Controllers
                 return Json(new ResultsJson(new Message(CodeMessage.PostNull, "PostNull"), null));
             return Json(Global.BUSS.BussResults(this, activeApi, _accessor));
         }
+
+        /// <summary>
+        /// 展示页
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult ShowPage([FromBody]ShowPageApi showPageApi)
+        {
+            if (showPageApi == null)
+                return Json(new ResultsJson(new Message(CodeMessage.PostNull, "PostNull"), null));
+            return Json(Global.BUSS.BussResults(this, showPageApi, _accessor));
+        }
     }
 }
