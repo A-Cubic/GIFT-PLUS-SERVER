@@ -62,7 +62,7 @@ namespace ACBC.Buss
             string signature = "jsapi_ticket=" + jsapi_ticket
                              + "&noncestr=" + nonceStr
                              + "&timestamp="+ timestamp
-                             + "&url=http://localhost:3000/" ;            
+                             + "&url=www.a-cubic.com/wx/wwj";            
             signature = Util.Sha1(signature);
             simpleShowPageSignItem.nonceStr = nonceStr;
             simpleShowPageSignItem.signature = signature;
