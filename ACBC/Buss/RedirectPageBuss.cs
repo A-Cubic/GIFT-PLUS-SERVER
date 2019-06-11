@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ACBC.Common;
 using ACBC.Dao;
 
 namespace ACBC.Buss
@@ -10,8 +11,13 @@ namespace ACBC.Buss
     {
         public string RedirectPage(string code)
         {
-            RedirectPageDao redirectPageDao = new RedirectPageDao();
-            string page = redirectPageDao.RedirectPage(code);
+            string page= Util.GetRedis(code);
+            if(page==null || page=="" )
+            {
+                RedirectPageDao redirectPageDao = new RedirectPageDao();
+                page = redirectPageDao.RedirectPage(code);
+                Util.SaveRedis(code, page, 300);
+            }            
             return page;
         }
     }
