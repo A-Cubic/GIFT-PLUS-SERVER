@@ -47,7 +47,11 @@ namespace ACBC.Common
         InvalidRemark=8004,//活动标题错误
         InvalidGift=8005,//礼品错误
         InvalidStatus=8006,//状态错误
+        ErrorActiveId=8007,//活动单号错误
+        ErrorOperation=8008,//活动操作错误
+        ErrorState=8009,//活动状态错误
 
+        ErrorOrderCode =9001,//ordercode错误
 
 
         InvalidEnvAndGroup = 5000,

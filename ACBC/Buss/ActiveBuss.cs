@@ -30,7 +30,7 @@ namespace ACBC.Buss
             }
             if (activeListParam.pageSize == 0)
             {
-                activeListParam.pageSize = 10;
+                activeListParam.pageSize = 12;
             }
             if (activeListParam.title != "" && activeListParam.title != null)
             {
@@ -52,10 +52,11 @@ namespace ACBC.Buss
                 if (dt.Rows.Count > 0)
                 {
                     DataView dataView = new DataView(dt);
-                    DataTable dt1 = dataView.ToTable(true, "active_id", "active_time_from", "active_time_to", "remark", "active_type");
+                    DataTable dt1 = dataView.ToTable(true, "active_id", "active_time_from", "active_time_to", "remark", "active_type", "active_state");
                     for (int i = (activeListParam.current - 1) * activeListParam.pageSize; i < dt1.Rows.Count && i < activeListParam.current * activeListParam.pageSize; i++)
                     {
                         ActiveListItem activeListItem = new ActiveListItem();
+                        activeListItem.activeId = dt1.Rows[i]["active_id"].ToString();
                         activeListItem.img.Add("http://llwell-wxapp.oss-cn-beijing.aliyuncs.com/A-cubic/goods.png");
                         activeListItem.img.Add("http://llwell-wxapp.oss-cn-beijing.aliyuncs.com/A-cubic/heart.png");
                         activeListItem.img.Add("http://llwell-wxapp.oss-cn-beijing.aliyuncs.com/A-cubic/up.png");
@@ -71,20 +72,24 @@ namespace ACBC.Buss
                         }
                         if (dtselect.Rows.Count > 0)
                         {
-                            if (dtselect.Rows[0][0].ToString() == "0")
+                            for (int j=0;j< dtselect.Rows.Count;j++)
                             {
-                                activeListItem.img[0] = "http://llwell-wxapp.oss-cn-beijing.aliyuncs.com/A-cubic/goodsred.png";
-                            }
-                            else if (dtselect.Rows[0][0].ToString() == "1")
-                            {
-                                activeListItem.img[1] = "http://llwell-wxapp.oss-cn-beijing.aliyuncs.com/A-cubic/heartred.png";
-                            }
-                            else
-                            {
-                                activeListItem.img[2] = "http://llwell-wxapp.oss-cn-beijing.aliyuncs.com/A-cubic/upred.png";
-                            }
+                                if (dtselect.Rows[j]["VALUE_TYPE"].ToString() == "0")
+                                {
+                                    activeListItem.img[0] = "http://llwell-wxapp.oss-cn-beijing.aliyuncs.com/A-cubic/goodsred.png";
+                                }
+                                else if (dtselect.Rows[j]["VALUE_TYPE"].ToString() == "1")
+                                {
+                                    activeListItem.img[1] = "http://llwell-wxapp.oss-cn-beijing.aliyuncs.com/A-cubic/heartred.png";
+                                }
+                                else if (dtselect.Rows[j]["VALUE_TYPE"].ToString() == "2")
+                                {
+                                    activeListItem.img[2] = "http://llwell-wxapp.oss-cn-beijing.aliyuncs.com/A-cubic/upred.png";
+                                }
+                            }                           
                         }
                         activeListItem.title = dt1.Rows[i]["remark"].ToString();
+                        activeListItem.activeType = dt1.Rows[i]["active_state"].ToString();
                         activeListItem.time = dt1.Rows[i]["active_time_from"].ToString() + "~" + dt1.Rows[i]["active_time_to"].ToString();
                         activeListItem.drainage = dt.Select("member_name<>'' and active_id='" + dt1.Rows[i]["active_id"].ToString() + "'").Length.ToString();
                         activeListItem.consumeNum = dt.Select("consume>'0' and active_id='" + dt1.Rows[i]["active_id"].ToString() + "'").Length.ToString();
@@ -99,6 +104,50 @@ namespace ACBC.Buss
                 throw new ApiException(CodeMessage.DBSelectError, e.StackTrace);
             }
             return pageResult;
+        }
+
+        /// <summary>
+        /// 开始活动、暂停、结束
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public string Do_ChangeActive(BaseApi baseApi)
+        {
+            ActiveOperationParam activeOperationParam = JsonConvert.DeserializeObject<ActiveOperationParam>(baseApi.param.ToString());
+            if (activeOperationParam.activeId==null || activeOperationParam.activeId =="")
+            {
+                throw new ApiException(CodeMessage.ErrorActiveId, "ErrorActiveId");
+            }
+            if (activeOperationParam.operation == null || activeOperationParam.operation == "")
+            {
+                throw new ApiException(CodeMessage.ErrorOperation, "ErrorOperation");
+            }
+            else
+            {
+                if (activeOperationParam.operation == "开始")
+                {
+                    activeOperationParam.operation = "1";
+                }
+                else if (activeOperationParam.operation == "暂停")
+                {
+                    activeOperationParam.operation = "0";
+                }
+                else if(activeOperationParam.operation == "结束")
+                {
+                    activeOperationParam.operation = "-1";
+                }
+            }
+            ActiveDao activeDao = new ActiveDao();
+            string state = activeDao.CheckActive(activeOperationParam);
+            if (state == "" || state == "-1")
+            {
+                throw new ApiException(CodeMessage.ErrorState, "ErrorState");
+            }
+            else if(state!= activeOperationParam.operation)
+            {
+                activeDao.ChangeActive(activeOperationParam);               
+            }
+            return "";
         }
 
         /// <summary>

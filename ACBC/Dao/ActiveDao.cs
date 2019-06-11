@@ -42,7 +42,7 @@ namespace ACBC.Dao
         public bool InsertAddActive(AddActiveParam addActiveParam,string shopId)
         {
             StringBuilder selectBuilder = new StringBuilder();
-            selectBuilder.AppendFormat(ActiceSqls.INSERT_T_BUSS_ACTIVE, shopId, addActiveParam.activeType, addActiveParam.date[0], addActiveParam.date[1], addActiveParam.activeRemark);
+            selectBuilder.AppendFormat(ActiceSqls.INSERT_T_BUSS_ACTIVE, shopId, addActiveParam.activeType, addActiveParam.date[0], addActiveParam.date[1], addActiveParam.activeRemark,"0");
             string select = selectBuilder.ToString();
             if (DatabaseOperationWeb.ExecuteDML(select))
             {
@@ -257,10 +257,49 @@ namespace ACBC.Dao
                 return false;
             }
         }
+
+        public string CheckActive(ActiveOperationParam activeOperationParam)
+        {
+            StringBuilder selectBuilder = new StringBuilder();
+            selectBuilder.AppendFormat(ActiceSqls.SELECT_ACTIVE_STATE_FROM_T_BUSS_ACTIVE, activeOperationParam.activeId);
+            string select = selectBuilder.ToString();
+            DataTable dt = DatabaseOperationWeb.ExecuteSelectDS(select, "T").Tables[0];
+            string state = "";
+            if (dt.Rows.Count>0)
+            {
+                state = dt.Rows[0]["ACTIVE_STATE"].ToString();
+            }
+            return state;
+        }
+
+        public bool ChangeActive(ActiveOperationParam activeOperationParam)
+        {
+            StringBuilder selectBuilder = new StringBuilder();
+            selectBuilder.AppendFormat(ActiceSqls.UPDATE_ACTIVE_STATE_FROM_T_BUSS_ACTIVE, activeOperationParam.operation, activeOperationParam.activeId);
+            string select = selectBuilder.ToString();
+            if (DatabaseOperationWeb.ExecuteDML(select))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 
     public class ActiceSqls
     {
+        public const string UPDATE_ACTIVE_STATE_FROM_T_BUSS_ACTIVE = ""
+            + " UPDATE T_BUSS_ACTIVE "
+            + " SET ACTIVE_STATE='{0}' "
+            + " WHERE ACTIVE_ID='{1}'";
+
+        public const string SELECT_ACTIVE_STATE_FROM_T_BUSS_ACTIVE = ""
+            + " SELECT ACTIVE_STATE "
+            + " FROM T_BUSS_ACTIVE "
+            + " WHERE ACTIVE_ID='{0}' ";
+
         public const string UPDATE_T_BUSS_ACTIVE_GOODS_BY_NUM_AND_GOODSID = ""
             + "UPDATE T_BUSS_ACTIVE_GOODS "
             + " SET NUM='{0}' "
@@ -306,8 +345,8 @@ namespace ACBC.Dao
             + " AND REMARK='{4}'";
 
         public const string INSERT_T_BUSS_ACTIVE = ""
-            + " INSERT INTO T_BUSS_ACTIVE(ACTIVE_STORE,ACTIVE_TYPE,ACTIVE_TIME_FROM,ACTIVE_TIME_TO,REMARK) "
-            + " VALUES('{0}','{1}','{2}','{3}','{4}')";
+            + " INSERT INTO T_BUSS_ACTIVE(ACTIVE_STORE,ACTIVE_TYPE,ACTIVE_TIME_FROM,ACTIVE_TIME_TO,REMARK,ACTIVE_STATE) "
+            + " VALUES('{0}','{1}','{2}','{3}','{4}','{5}')";
 
         public const string SELECT_T_BUSS_ACTIVE_CHECK_BY_ACTIVE_ID = ""
             + " SELECT VALUE_TYPE "
@@ -320,13 +359,14 @@ namespace ACBC.Dao
             + " WHERE ACTIVE_ID='{0}'";
 
         public const string SELECT_T_BUSS_ACTIVE_AND_T_BUSS_MEMBER_CHECK_STORE = ""
-            + " SELECT A.ACTIVE_TYPE,M.MEMBER_NAME,C.CONSUME,A.ACTIVE_ID,A.ACTIVE_TIME_FROM,A.ACTIVE_TIME_TO,A.REMARK "
+            + " SELECT A.ACTIVE_TYPE,M.MEMBER_NAME,C.CONSUME,A.ACTIVE_ID,A.ACTIVE_TIME_FROM,A.ACTIVE_TIME_TO,A.REMARK,A.ACTIVE_STATE "
             + " FROM T_BUSS_ACTIVE A LEFT JOIN T_BUSS_MEMBER_CHECK_STORE C "
             + " ON A.ACTIVE_STORE=C.STORE_ID  AND C.CHECK_TIME BETWEEN A.ACTIVE_TIME_FROM AND A.ACTIVE_TIME_TO "
             + " LEFT JOIN T_BASE_MEMBER M "
             + " ON M.MEMBER_ID = C.MEMBER_ID "
             + " AND M.REG_TIME BETWEEN A.ACTIVE_TIME_FROM "
             + " AND A.ACTIVE_TIME_TO "
-            + " WHERE  A.ACTIVE_STORE = '{0}' {1}";
+            + " WHERE  A.ACTIVE_STORE = '{0}' {1}"
+            + " ORDER BY A.ACTIVE_ID DESC";
     }
 }

@@ -57,6 +57,11 @@ namespace ACBC.Buss
     #endregion
 
     #region Param
+    public class SimpleShowPageSignParam
+    {
+        public string url;
+    }
+
     public class GoodsListParam
     {
         public string goodsName;
@@ -96,7 +101,13 @@ namespace ACBC.Buss
         public int current;
         public int pageSize;
     }
-  
+
+    public class ActiveOperationParam
+    {
+        public string activeId;
+        public string operation;//操作
+    }
+
     public class AddEmployeeParam
     {
         public string storeCode;//验证码
@@ -133,6 +144,13 @@ namespace ACBC.Buss
         public int pageSize;
     }
 
+    public class OrderDetailsParam
+    {
+        public string orderCode;//订单code
+        public int current;
+        public int pageSize;
+    }
+
     public class UserLoginParam
     {
         public string userName;//用户名
@@ -141,6 +159,29 @@ namespace ACBC.Buss
     #endregion
 
     #region Item
+    public class SimpleShowPageSignItem
+    {
+        public string appId;
+        public string timestamp;
+        public string nonceStr;
+        public string signature;
+    }
+
+    public class TicketItem
+    {
+        public int errcode;
+        public string errmsg;
+        public string ticket;
+        public int expires_in;
+    }
+
+    public class TokenItem
+    {
+        public string access_token;
+        public string expires_in;
+        public string errcode;
+        public string errmsg;
+    }
 
     public class SimpleShowPageItem
     {
@@ -185,6 +226,18 @@ namespace ACBC.Buss
         public double totalPrice;//总钱数               
     }
 
+    public class OrderDetailsItem
+    {
+        public int key;
+        public string goodsId;
+        public string barcode;
+        public string goodsName;
+        public string num;
+        public string supplyPrice;
+        public string salePrice;
+        public string state;
+    }
+
     public class MemberListItem
     {
         public int key;
@@ -211,6 +264,7 @@ namespace ACBC.Buss
     {
         public int key;
         public string title;//标题
+        public string activeId;
         public string consumeNum;//消费
         public string drainage;//引流
         public string newUser;//拓客
