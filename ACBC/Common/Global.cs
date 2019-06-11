@@ -135,5 +135,21 @@ namespace ACBC.Common
                 return Environment.GetEnvironmentVariable("MysqlDBPassword");
             }
         }
+
+        public static string AppId
+        {
+            get
+            {
+                return Environment.GetEnvironmentVariable("AppId");
+            }
+        }
+
+        public static string Secret
+        {
+            get
+            {
+                return Environment.GetEnvironmentVariable("Secret");
+            }
+        }
     }
 }

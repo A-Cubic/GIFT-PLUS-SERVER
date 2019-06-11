@@ -31,7 +31,7 @@ namespace ACBC.Buss
         public SimpleShowPageSignItem Do_SimpleShowPageSign(BaseApi baseApi)
         {            
             SimpleShowPageSignItem simpleShowPageSignItem = new SimpleShowPageSignItem();
-            simpleShowPageSignItem.appId = "wx027e2118d0b29575";
+            simpleShowPageSignItem.appId = Global.AppId;
             string url = "";
             string contentType = "";
             string rep = "";
@@ -39,7 +39,7 @@ namespace ACBC.Buss
             if (access_token==null || access_token =="")
             {
                 url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&"
-                + "appid=wx027e2118d0b29575&secret=72bef69256e52ca66428a80845685d76";
+                + "appid="+ Global.AppId + "&secret="+ Global.Secret ;
                 contentType = "application / json";
                 rep = Util.HttpGet(url, contentType);
                 TokenItem tokenItem = JsonConvert.DeserializeObject<TokenItem>(rep);
@@ -62,7 +62,7 @@ namespace ACBC.Buss
             string signature = "jsapi_ticket=" + jsapi_ticket
                              + "&noncestr=" + nonceStr
                              + "&timestamp="+ timestamp
-                             + "&url=www.a-cubic.com/wx/wwj";            
+                             + "&http://url=www.a-cubic.com/wx/wwj";            
             signature = Util.Sha1(signature);
             simpleShowPageSignItem.nonceStr = nonceStr;
             simpleShowPageSignItem.signature = signature;
