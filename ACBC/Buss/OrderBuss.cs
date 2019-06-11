@@ -81,6 +81,33 @@ namespace ACBC.Buss
             pageResult.item = orderListItemList;
             return pageResult;
         }
+
+        /// <summary>
+        /// 订单详情
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public PageResult Do_OrderDetails(BaseApi baseApi)
+        {
+            PageResult pageResult = new PageResult();
+            OrderDetailsParam orderDetailsParam = JsonConvert.DeserializeObject<OrderDetailsParam>(baseApi.param.ToString());
+            if (orderDetailsParam.orderCode==null || orderDetailsParam.orderCode =="")
+            {
+                throw new ApiException(CodeMessage.ErrorOrderCode, "ErrorOrderCode");
+            }
+            if (orderDetailsParam.current==0)
+            {
+                orderDetailsParam.current = 1;
+            }
+            if (orderDetailsParam.pageSize ==0)
+            {
+                orderDetailsParam.pageSize = 10;
+            }
+            OrderDao orderDao = new OrderDao();
+            pageResult = orderDao.OrderDetails(orderDetailsParam);
+
+            return pageResult;
+        }
     }
    
 }
