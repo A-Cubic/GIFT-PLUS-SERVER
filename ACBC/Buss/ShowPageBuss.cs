@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ACBC.Common;
 using ACBC.Dao;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace ACBC.Buss
@@ -69,5 +70,6 @@ namespace ACBC.Buss
             simpleShowPageSignItem.timestamp = timestamp;
             return simpleShowPageSignItem;
         }
+              
     }
 }
