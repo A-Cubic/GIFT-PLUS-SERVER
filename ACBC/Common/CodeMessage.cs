@@ -53,6 +53,7 @@ namespace ACBC.Common
 
         ErrorOrderCode =9001,//ordercode错误
 
+        ErrorEquipmentId=20001,//分组参数错误
 
         InvalidEnvAndGroup = 5000,
     }

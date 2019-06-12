@@ -57,6 +57,11 @@ namespace ACBC.Buss
     #endregion
 
     #region Param
+    public class SimpleShowPageParam
+    {
+        public string equipmentId;
+    }
+
     public class SimpleShowPageSignParam
     {
         public string url;

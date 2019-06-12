@@ -22,10 +22,15 @@ namespace ACBC.Buss
         public SimpleShowPageItem Do_SimpleShowPage(BaseApi baseApi)
         {
             ShowPageDao showPageDao = new ShowPageDao();
+            SimpleShowPageParam simpleShowPageParam = JsonConvert.DeserializeObject<SimpleShowPageParam>(baseApi.param.ToString());
+            if (simpleShowPageParam.equipmentId==null || simpleShowPageParam.equipmentId=="")
+            {
+                throw new ApiException(CodeMessage.ErrorEquipmentId, "分组参数错误");
+            }
             SimpleShowPageItem simpleShowPageItem = new SimpleShowPageItem();
-            simpleShowPageItem.banners = showPageDao.SimpleShowPageBanner();
-            simpleShowPageItem.menu = showPageDao.SimpleShowPageMenu();
-            simpleShowPageItem.button = showPageDao.SimpleShowPageButton();
+            simpleShowPageItem.banners = showPageDao.SimpleShowPageBanner(simpleShowPageParam.equipmentId);
+            simpleShowPageItem.menu = showPageDao.SimpleShowPageMenu(simpleShowPageParam.equipmentId);
+            simpleShowPageItem.button = showPageDao.SimpleShowPageButton(simpleShowPageParam.equipmentId);
             return simpleShowPageItem;
         }
 
