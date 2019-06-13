@@ -50,6 +50,8 @@ namespace ACBC.Common
         ErrorActiveId=8007,//活动单号错误
         ErrorOperation=8008,//活动操作错误
         ErrorState=8009,//活动状态错误
+        ErrorHeartItemValue=8010,//心值不是整数
+        ErrorLimitItemValue=8011,//上限不是整数
 
         ErrorOrderCode =9001,//ordercode错误
 

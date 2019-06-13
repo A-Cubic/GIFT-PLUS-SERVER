@@ -181,10 +181,37 @@ namespace ACBC.Buss
                 {
                     throw new ApiException(CodeMessage.InvalidConsume, "InvalidConsume");
                 } 
-            }                    
-            if ((addActiveParam.heartItemValue == null || addActiveParam.heartItemValue == "" || !double.TryParse(addActiveParam.heartItemValue, out double h)) && (addActiveParam.limitItemValue == null || addActiveParam.limitItemValue == "" || !double.TryParse(addActiveParam.limitItemValue, out double l)) && (addActiveParam.list == null || addActiveParam.list.Count == 0))
+            }
+            int mistake = 0;
+            if (addActiveParam.heartItemValue != null && addActiveParam.heartItemValue != "")
             {
-                throw new ApiException(CodeMessage.InvalidGift, "InvalidGift");
+                if (!double.TryParse(addActiveParam.heartItemValue, out double h))
+                {
+                    throw new ApiException(CodeMessage.ErrorHeartItemValue, "ErrorHeartItemValue");
+                }
+            }
+            else
+            {
+                mistake += 1;
+            }
+            if (addActiveParam.limitItemValue != null && addActiveParam.limitItemValue != "")
+            {
+                if (!double.TryParse(addActiveParam.limitItemValue, out double h))
+                {
+                    throw new ApiException(CodeMessage.ErrorLimitItemValue, "ErrorLimitItemValue");
+                }
+            }
+            else
+            {
+                mistake += 1;
+            }
+            if (addActiveParam.list == null || addActiveParam.list.Count == 0)
+            {
+                mistake += 1;
+                if (mistake==3)
+                {
+                    throw new ApiException(CodeMessage.InvalidGift, "InvalidGift");
+                }
             }
             if (addActiveParam.list!=null)
             {
