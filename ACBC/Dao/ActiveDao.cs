@@ -21,6 +21,21 @@ namespace ACBC.Dao
             return dt;
         }
 
+        public bool UpdateActiveList(string shopId)
+        {
+            StringBuilder selectBuilder = new StringBuilder();
+            selectBuilder.AppendFormat(ActiceSqls.UPDATE_ACTIVE_STATE_FROM_T_BUSS_ACTIVE, "-1", shopId);
+            string select = selectBuilder.ToString();
+            if (DatabaseOperationWeb.ExecuteDML(select))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public DataTable SelectActiveConsume(string activeId)
         {
             StringBuilder selectBuilder = new StringBuilder();
@@ -258,18 +273,20 @@ namespace ACBC.Dao
             }
         }
 
-        public string CheckActive(ActiveOperationParam activeOperationParam)
+        public List<string> CheckActive(ActiveOperationParam activeOperationParam)
         {
+            List<string> list = new List<string>();
             StringBuilder selectBuilder = new StringBuilder();
             selectBuilder.AppendFormat(ActiceSqls.SELECT_ACTIVE_STATE_FROM_T_BUSS_ACTIVE, activeOperationParam.activeId);
             string select = selectBuilder.ToString();
-            DataTable dt = DatabaseOperationWeb.ExecuteSelectDS(select, "T").Tables[0];
-            string state = "";
+            DataTable dt = DatabaseOperationWeb.ExecuteSelectDS(select, "T").Tables[0];            
             if (dt.Rows.Count>0)
             {
-                state = dt.Rows[0]["ACTIVE_STATE"].ToString();
+                string state = dt.Rows[0]["ACTIVE_STATE"].ToString();
+                string time= dt.Rows[0]["ACTIVE_TIME_TO"].ToString();
+                list.Add(state);
             }
-            return state;
+            return list;
         }
 
         public bool ChangeActive(ActiveOperationParam activeOperationParam)
@@ -296,7 +313,7 @@ namespace ACBC.Dao
             + " WHERE ACTIVE_ID='{1}'";
 
         public const string SELECT_ACTIVE_STATE_FROM_T_BUSS_ACTIVE = ""
-            + " SELECT ACTIVE_STATE "
+            + " SELECT ACTIVE_STATE,ACTIVE_TIME_TO "
             + " FROM T_BUSS_ACTIVE "
             + " WHERE ACTIVE_ID='{0}' ";
 

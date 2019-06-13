@@ -45,6 +45,7 @@ namespace ACBC.Buss
             pageResult.pagination = new Page(activeListParam.current, activeListParam.pageSize);
             string shopId = Util.GetUserShopId(baseApi.token);
             ActiveDao activeDao = new ActiveDao();
+            DateTime time = DateTime.Now;
             try
             {
                 DataTable dt = activeDao.ActiveList(shopId, activeListParam);
@@ -89,7 +90,15 @@ namespace ACBC.Buss
                             }                           
                         }
                         activeListItem.title = dt1.Rows[i]["remark"].ToString();
-                        activeListItem.activeType = dt1.Rows[i]["active_state"].ToString();
+                        if (time > Convert.ToDateTime(dt1.Rows[i]["active_time_to"]) && dt1.Rows[i]["active_state"].ToString() != "-1")
+                        {
+                            activeDao.UpdateActiveList(activeListItem.activeId);
+                            activeListItem.activeType = "-1";
+                        }
+                        else
+                        {
+                            activeListItem.activeType = dt1.Rows[i]["active_state"].ToString();
+                        }                        
                         activeListItem.time = dt1.Rows[i]["active_time_from"].ToString() + "~" + dt1.Rows[i]["active_time_to"].ToString();
                         activeListItem.drainage = dt.Select("member_name<>'' and active_id='" + dt1.Rows[i]["active_id"].ToString() + "'").Length.ToString();
                         activeListItem.consumeNum = dt.Select("consume>'0' and active_id='" + dt1.Rows[i]["active_id"].ToString() + "'").Length.ToString();
@@ -138,12 +147,13 @@ namespace ACBC.Buss
                 }
             }
             ActiveDao activeDao = new ActiveDao();
-            string state = activeDao.CheckActive(activeOperationParam);
-            if (state == "" || state == "-1")
+            List<string> list = activeDao.CheckActive(activeOperationParam);
+            DateTime time = DateTime.Now;
+            if (list[0] == "" || list[0] == "-1" || time> Convert.ToDateTime(list[1]))
             {
                 throw new ApiException(CodeMessage.ErrorState, "ErrorState");
             }
-            else if(state!= activeOperationParam.operation)
+            else if(list[0] != activeOperationParam.operation)
             {
                 activeDao.ChangeActive(activeOperationParam);               
             }
@@ -183,7 +193,7 @@ namespace ACBC.Buss
                 } 
             }
             int mistake = 0;
-            if (addActiveParam.heartItemValue != null && addActiveParam.heartItemValue != "")
+            if (addActiveParam.heartItemValue != null && addActiveParam.heartItemValue != "" && addActiveParam.heartItemValue != "0")
             {
                 if (!double.TryParse(addActiveParam.heartItemValue, out double h))
                 {
@@ -194,7 +204,7 @@ namespace ACBC.Buss
             {
                 mistake += 1;
             }
-            if (addActiveParam.limitItemValue != null && addActiveParam.limitItemValue != "")
+            if (addActiveParam.limitItemValue != null && addActiveParam.limitItemValue != "" && addActiveParam.limitItemValue != "0")
             {
                 if (!double.TryParse(addActiveParam.limitItemValue, out double h))
                 {
@@ -235,7 +245,7 @@ namespace ACBC.Buss
                  
                 if (addActiveParam.activeType == "0")
                 {
-                    if (addActiveParam.heartItemValue != null && addActiveParam.heartItemValue != "")
+                    if (addActiveParam.heartItemValue != null && addActiveParam.heartItemValue != "" && addActiveParam.heartItemValue!="0")
                     {
                         addActiveParam.itemNums = "1";
                         addActiveParam.ItemValue = addActiveParam.heartItemValue;
@@ -245,7 +255,7 @@ namespace ACBC.Buss
                             throw new ApiException(CodeMessage.DBAddError, "DBAddError");
                         }
                     }
-                    if (addActiveParam.limitItemValue!=null && addActiveParam.limitItemValue !="")
+                    if (addActiveParam.limitItemValue!=null && addActiveParam.limitItemValue !="" && addActiveParam.limitItemValue !="0")
                     {
                         addActiveParam.itemNums = "1";
                         addActiveParam.ItemValue = addActiveParam.limitItemValue;
