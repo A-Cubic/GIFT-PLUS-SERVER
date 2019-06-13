@@ -36,7 +36,7 @@ namespace ACBC.Buss
             }
             if (memberListParam.userName != "" && memberListParam.userName != null)
             {
-                memberListParam.userName = " and m.member_name='" + memberListParam.userName + "'";
+                memberListParam.userName = " and m.member_name='%" + memberListParam.userName + "%'";
             }
             else
             {

@@ -182,7 +182,7 @@ namespace ACBC.Buss
                     throw new ApiException(CodeMessage.InvalidConsume, "InvalidConsume");
                 } 
             }                    
-            if ((addActiveParam.heartItemValue == null || addActiveParam.heartItemValue == "") && (addActiveParam.limitItemValue == null || addActiveParam.limitItemValue == "") && (addActiveParam.list == null || addActiveParam.list.Count == 0))
+            if ((addActiveParam.heartItemValue == null || addActiveParam.heartItemValue == "" || !double.TryParse(addActiveParam.heartItemValue, out double h)) && (addActiveParam.limitItemValue == null || addActiveParam.limitItemValue == "" || !double.TryParse(addActiveParam.limitItemValue, out double l)) && (addActiveParam.list == null || addActiveParam.list.Count == 0))
             {
                 throw new ApiException(CodeMessage.InvalidGift, "InvalidGift");
             }
