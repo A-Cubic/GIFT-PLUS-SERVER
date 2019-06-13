@@ -36,7 +36,7 @@ namespace ACBC.Buss
             }
             if (memberListParam.userName != "" && memberListParam.userName != null)
             {
-                memberListParam.userName = " and m.member_name='%" + memberListParam.userName + "%'";
+                memberListParam.userName = " and m.member_name like '%" + memberListParam.userName + "%'";
             }
             else
             {
@@ -44,8 +44,18 @@ namespace ACBC.Buss
             }
             if (memberListParam.sex != "" && memberListParam.sex != null)
             {
-                memberListParam.sex = memberListParam.sex == "男" ? "1" : "2";
-                memberListParam.sex = " and m.member_sex='" + memberListParam.sex + "'";
+                switch (memberListParam.sex)
+                {
+                    case "男":
+                        memberListParam.sex = " and m.member_sex='1'";
+                        break;
+                    case "女":
+                        memberListParam.sex = " and m.member_sex='2'";
+                        break;
+                    case "未知":
+                        memberListParam.sex = " and m.member_sex='0'";
+                        break;
+                }               
             }
             else
             {
@@ -63,8 +73,19 @@ namespace ACBC.Buss
                     memberListItem.key = i+1;
                     memberListItem.name = dt.Rows[i]["member_name"].ToString();
                     memberListItem.phone= dt.Rows[i]["reg_phone"].ToString();
-                    memberListItem.img = dt.Rows[i]["member_img"].ToString();
-                    memberListItem.sex = dt.Rows[i]["member_sex"].ToString()=="1"?"男":"女";
+                    memberListItem.img = dt.Rows[i]["member_img"].ToString();                     
+                    switch (dt.Rows[i]["member_sex"].ToString())
+                    {
+                        case "1":
+                            memberListItem.sex = "男";
+                            break;
+                        case "2":
+                            memberListItem.sex = "女";
+                            break;
+                        case "0":
+                            memberListItem.sex = "未知";
+                            break;
+                    }
                     pageResult.list.Add(memberListItem);
                 }
             }
