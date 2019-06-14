@@ -313,11 +313,7 @@ namespace ACBC.Buss
                                 throw new ApiException(CodeMessage.DBAddError, "DBAddError");
                             }
                         }
-                    }
-                    if (!activeDao.InsertActiveCheck(addActiveParam, id))
-                    {
-                        throw new ApiException(CodeMessage.DBAddError, "DBAddError");
-                    }
+                    }                   
                 }
             }
             else
