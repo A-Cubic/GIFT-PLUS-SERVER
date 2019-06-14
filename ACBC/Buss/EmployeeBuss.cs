@@ -31,7 +31,7 @@ namespace ACBC.Buss
             }
             if (employeeLogonParam.pageSize==0)
             {
-                employeeLogonParam.pageSize = 10;
+                employeeLogonParam.pageSize = 9;
             }
             pageResult.pagination = new Page(employeeLogonParam.current, employeeLogonParam.pageSize);
             string shopId = Util.GetUserShopId(baseApi.token);

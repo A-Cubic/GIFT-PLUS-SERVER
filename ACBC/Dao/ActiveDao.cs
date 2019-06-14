@@ -285,6 +285,7 @@ namespace ACBC.Dao
                 string state = dt.Rows[0]["ACTIVE_STATE"].ToString();
                 string time= dt.Rows[0]["ACTIVE_TIME_TO"].ToString();
                 list.Add(state);
+                list.Add(time);
             }
             return list;
         }
