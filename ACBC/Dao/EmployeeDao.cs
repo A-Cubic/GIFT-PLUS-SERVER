@@ -50,7 +50,7 @@ namespace ACBC.Dao
         public bool AddT_buss_store_code(AddEmployeeParam addEmployeeParam, string shopId)
         {
             StringBuilder selectBuilder = new StringBuilder();
-            selectBuilder.AppendFormat(EmployeeSql.INSERT_T_BUSS_STORE_CODE, addEmployeeParam.storeCode, addEmployeeParam.state, shopId);
+            selectBuilder.AppendFormat(EmployeeSql.INSERT_T_BUSS_STORE_CODE, shopId, addEmployeeParam.storeCode, addEmployeeParam.state);
             string select = selectBuilder.ToString();
             if (DatabaseOperationWeb.ExecuteDML(select))
             {
