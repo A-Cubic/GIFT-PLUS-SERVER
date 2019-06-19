@@ -100,7 +100,7 @@ namespace ACBC.Buss
                             activeListItem.activeType = dt1.Rows[i]["active_state"].ToString();
                         }                        
                         activeListItem.time = dt1.Rows[i]["active_time_from"].ToString() + "~" + dt1.Rows[i]["active_time_to"].ToString();
-                        activeListItem.drainage = dt.Select("member_name<>'' and active_id='" + dt1.Rows[i]["active_id"].ToString() + "'").Length.ToString();
+                        activeListItem.drainage = activeDao.Drainage(activeListItem.activeId, shopId, activeListParam).ToString();
                         activeListItem.consumeNum = dt.Select("consume>'0' and active_id='" + dt1.Rows[i]["active_id"].ToString() + "'").Length.ToString();
                         activeListItem.newUser = dataView.ToTable(true, "member_name", "active_id").Select("member_name<>'' and active_id = '" + dt1.Rows[i]["active_id"].ToString() + "'").Length.ToString();
                         pageResult.list.Add(activeListItem);

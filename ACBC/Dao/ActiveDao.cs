@@ -21,6 +21,16 @@ namespace ACBC.Dao
             return dt;
         }
 
+        public int Drainage(string activeId, string shopId, ActiveListParam activeListParam)
+        {
+            StringBuilder selectBuilder = new StringBuilder();
+            selectBuilder.AppendFormat(ActiceSqls.SELECT_DRAINAGE_FROM_T_BUSS_ACTIVE, activeId, shopId, activeListParam.title);
+            string select = selectBuilder.ToString();
+            DataTable dt = DatabaseOperationWeb.ExecuteSelectDS(select, "T").Tables[0];
+            int count = dt.Rows.Count;
+            return count;
+        }
+
         public bool UpdateActiveList(string shopId)
         {
             StringBuilder selectBuilder = new StringBuilder();
@@ -304,6 +314,8 @@ namespace ACBC.Dao
                 return false;
             }
         }
+
+       
     }
 
     public class ActiceSqls
@@ -386,5 +398,11 @@ namespace ACBC.Dao
             + " AND A.ACTIVE_TIME_TO "
             + " WHERE  A.ACTIVE_STORE = '{0}' {1}"
             + " ORDER BY A.ACTIVE_ID DESC";
+
+        public const string SELECT_DRAINAGE_FROM_T_BUSS_ACTIVE = ""
+            + " SELECT A.ACTIVE_TYPE,M.MEMBER_NAME,C.CONSUME,A.ACTIVE_ID,A.ACTIVE_TIME_FROM,A.ACTIVE_TIME_TO,A.REMARK,A.ACTIVE_STATE "
+            + " FROM T_BUSS_ACTIVE A , T_BUSS_MEMBER_CHECK_STORE C , T_BASE_MEMBER M "
+            + " WHERE  A.ACTIVE_STORE=C.STORE_ID  AND M.MEMBER_ID = C.MEMBER_ID  AND C.CHECK_TIME BETWEEN A.ACTIVE_TIME_FROM AND A.ACTIVE_TIME_TO  "
+            + " AND A.ACTIVE_ID='{0}' AND  A.ACTIVE_STORE = '{1}' {2}  ORDER BY A.ACTIVE_ID DESC ";
     }
 }
